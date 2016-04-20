@@ -15,9 +15,9 @@ angular.module('quizApp', [])
 	return ({
 		get: function() {
 		var cheers= [
-				'Awesome!',
+				'Awesome!!!',
 				'Fantastic!',
-				'Excellent',
+				'Excellent!!',
 				'Super!',
 				'Way to go!',
 				'You are a genius!'];
@@ -36,6 +36,7 @@ angular.module('quizApp', [])
 .service('questions', function() {
 	return ({
 		get: function() {
+			//TODO: get alphabets,
 			//TODO: put in logic to select questions based on previous answers
 			var number = Math.floor(Math.random()*10);
 			return {
@@ -60,12 +61,13 @@ angular.module('quizApp', [])
 	this.clicked = function(option) {
 		if (option == this.question.answer)
 		{
-			alert(cheer.get());
+			//todo: flash instead of alert
+			this.message = cheer.get();
 			this.question = questions.get();
 		}
 		else
 		{
-
+			//TODO: Flash the correct answer
 		}
 	}
 	this.question = questions.get();
