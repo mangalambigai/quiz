@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en-US" ng-app="quizApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.rawgit.com/angular-ui/bower-ui-grid/master/ui-grid.min.css">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Learn colors, shapes and more.. fun app for preschoolers</title>
+</head>
+<body >
+    <header>
+    </header>
+
+    <main>
+        <div class="container-fluid">
+            <div ng-controller="QuizCtrl as quiz">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h1>{{quiz.question.question}}</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div ng-repeat="option in quiz.question.options"
+                        ng-click="quiz.clicked(option)"
+                        tabindex="0" class="col-lg-4 text-center">
+                        <h2>{{option}}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!--jquery-->
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!--bootstrap js-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <!--angular-->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+
+    <!--angular routing-->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-route.min.js"></script>
+
+    <!--angular grid-->
+    <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
+
+    <script src="js/all.js"></script>
+</body>
+</html>
