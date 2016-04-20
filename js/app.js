@@ -96,17 +96,26 @@ angular.module('quizApp', [])
  * @description
  * Controller for the quiz page
  */
-.controller('QuizCtrl', ['cheer', 'questions', function (cheer, questions) {
-
+.controller('QuizCtrl', ['$scope', 'cheer', 'questions', function ($scope, cheer, questions) {
+    var vm = this;
     this.clicked = function (option) {
         if (option == this.question.answer) {
             var cheerMsg = cheer.get();
             this.message = cheerMsg.message;
+            var msg = new SpeechSynthesisUtterance(this.message);
+            window.speechSynthesis.speak(msg);
             this.symbol = cheerMsg.symbol;
-            this.question = questions.get();
+            msg.onend=function(e) {
+                $scope.$apply(function() {
+                    vm.question = questions.get();
+                    var msg1 = new SpeechSynthesisUtterance(vm.question.question);
+                    window.speechSynthesis.speak(msg1);
+                });
+            };
         } else {
             //TODO: Flash the correct answer
         }
     }
+
     this.question = questions.get();
 }]);
