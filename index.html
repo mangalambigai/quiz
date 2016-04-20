@@ -15,25 +15,24 @@
     </header>
 
     <main>
-        <div class="container-fluid">
-            <div ng-controller="QuizCtrl as quiz">
-                <div class="row">
-                    <div class="col-lg-12">
+        <div class="container" ng-controller="QuizCtrl as quiz">
+            <div class="row">
+                <div class="col-lg-12">
                     <h1 class="bg-success text-center">{{quiz.message}}</h1>
-                    </div>
+                    <h1 class="text-center">{{quiz.symbol}}</h1>
                 </div>
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <h1>{{quiz.question.question}}</h1>
-                    </div>
+            </div>
+            <div class="row ">
+                <div class="text-center col-md-12">
+                    <h1>{{quiz.question.question}}</h1>
                 </div>
-                <div class="row">
-                    <div ng-repeat="option in quiz.question.options"
-                        ng-click="quiz.clicked(option)"
-                        tabindex="0" class="col-lg-4 text-center">
+                <div ng-repeat="option in quiz.question.options"
+                    class="text-center col-md-4">
+                    <button class="btn btn-primary btn-lg" ng-click="quiz.clicked(option)">
                         <h2>{{option}}</h2>
-                    </div>
+                    </button>
                 </div>
+            </div>
             </div>
         </div>
     </main>
