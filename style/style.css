@@ -45,6 +45,11 @@ html, body, main {
 	background-color: orange;
 }
 
+.cheer-picture h1{
+	font-size: 10em;
+	color: purple;
+}
+
 @media screen and (min-width: 768px) {
 	.answer {
 		width: 33%;
