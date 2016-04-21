@@ -28,7 +28,7 @@
                 </div>
                 <div ng-repeat="option in quiz.question.options"
                     class="text-center col-md-4">
-                    <button class="btn btn-primary btn-lg" ng-click="quiz.clicked(option)">
+                    <button class="btn btn-primary btn-lg" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
                         <h2>{{option}}</h2>
                     </button>
                 </div>
@@ -47,9 +47,6 @@
 
     <!--angular routing-->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-route.min.js"></script>
-
-    <!--angular grid-->
-    <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
 
     <script src="js/all.js"></script>
 </body>

@@ -98,19 +98,28 @@ angular.module('quizApp', [])
  */
 .controller('QuizCtrl', ['$scope', 'cheer', 'questions', function ($scope, cheer, questions) {
     var vm = this;
+    this.disableButtons = false;
     this.clicked = function (option) {
+        this.disableButtons = true;
         if (option == this.question.answer) {
+            //when a correct answer is clicked
+            //create a cheer and say it
             var cheerMsg = cheer.get();
             this.message = cheerMsg.message;
+            this.symbol = cheerMsg.symbol;
             var msg = new SpeechSynthesisUtterance(this.message);
             window.speechSynthesis.speak(msg);
-            this.symbol = cheerMsg.symbol;
+
             msg.onend=function(e) {
+                //After cheering, clear it, show the next question, and enable the buttons
                 $scope.$apply(function() {
+                    vm.message = ' ';
+                    vm.symbol = ' ';
                     vm.question = questions.get();
-                    var msg1 = new SpeechSynthesisUtterance(vm.question.question);
-                    window.speechSynthesis.speak(msg1);
+                    vm.disableButtons = false;
                 });
+                var msg1 = new SpeechSynthesisUtterance(vm.question.question);
+                window.speechSynthesis.speak(msg1);
             };
         } else {
             //TODO: Flash the correct answer
