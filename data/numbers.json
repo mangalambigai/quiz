@@ -1,0 +1,57 @@
+[
+	{
+		"question": "Click on the number zero!",
+		"answer": "0",
+		"prompt": "No, this is the number zero"
+	},
+	{
+		"question": "Click on the number one!",
+		"answer": "1",
+		"prompt": "No, this is the number one"
+	},
+	{
+		"question": "Click on the number two!",
+		"answer": "2",
+		"prompt": "No, this is the number two"
+	},
+	{
+		"question": "Click on the number three!",
+		"answer": "3",
+		"prompt": "No, this is the number three"
+	},
+	{
+		"question": "Click on the number four!",
+		"answer": "4",
+		"prompt": "No, this is the number four"
+	},
+	{
+		"question": "Click on the number five!",
+		"answer": "5",
+		"prompt": "No, this is the number five"
+	},
+	{
+		"question": "Click on the number six!",
+		"answer": "6",
+		"prompt": "No, this is the number six"
+	},
+	{
+		"question": "Click on the number seven!",
+		"answer": "7",
+		"prompt": "No, this is the number seven"
+	},
+	{
+		"question": "Click on the number eight!",
+		"answer": "8",
+		"prompt": "No, this is the number eight"
+	},
+	{
+		"question": "Click on the number nine!",
+		"answer": "9",
+		"prompt": "No, this is the number nine"
+	},
+	{
+		"question": "Click on the number ten!",
+		"answer": "10",
+		"prompt": "No, this is the number ten"
+	},
+]

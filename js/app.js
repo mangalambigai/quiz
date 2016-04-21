@@ -54,8 +54,68 @@ angular.module('quizApp', [])
  * @description
  * Gets randomly generated questions
  */
-.service('questions', function () {
+.service('questions', ['$http', function ($http) {
+    var questionPools=[];
+    //TODO: load a list of jsons to questionPools
+    var poolpromise = new Promise( function (resolve, reject) {
+        $http.get('data/shapes.json')
+        .then(function(questions) {
+            console.log(questions.data);
+            questionPools.push(questions.data);
+            resolve(questionPools);
+        });
+    });
+
     return ({
+        get: function() {
+            return poolpromise.then(function() {
+                //TODO: select random/ sequential pool from questionPools
+                var pool = questionPools[0];
+
+                //get the number of questions in the selected pool
+                var numQuestions = pool.length;
+                //choose a random question
+                var questionIndex = Math.floor(Math.random()*numQuestions);
+                //hardcode 3 options for now, since option button width is 33%
+                var optioncount = 3;
+
+                var options = pool[questionIndex].options;
+                if (!options)
+                {
+                    //There are no options specified in question.
+                    //Select randomly from other answers.
+                    options = [];
+                    //make sure the correct answer is in the options!
+                    options.push(pool[questionIndex].answer);
+                    //Add some other answers
+
+                    for (var i = 1; i < optioncount; i++) {
+                        var findAnotherOption = true;
+                        while (findAnotherOption) {
+                            var opt = pool[Math.floor(Math.random() * numQuestions)].answer;
+                            //if this option is already choosen, choose another one
+                            findAnotherOption = false;
+                            for (var j = 0; j < i; j++) {
+                                if (opt === options[j])
+                                    findAnotherOption = true;
+                            }
+                            if (!findAnotherOption)
+                                options[i] = opt;
+                        }
+                    }
+                    options = shuffle(options);
+                }
+
+                return {
+                    question: pool[questionIndex].question,
+                    answer: pool[questionIndex].answer,
+                    options: options,
+                    answerPrompt: pool[questionIndex].prompt
+                }
+
+            });
+        }
+        /*
         get: function () {
             //TODO: get alphabets,
             //TODO: put in logic to select questions based on previous answers
@@ -87,8 +147,9 @@ angular.module('quizApp', [])
                 answerPrompt: 'No, this is the number '+ number
             }
         }
+        */
     })
-})
+}])
 
 /**
  * @ngdoc controller
@@ -122,7 +183,11 @@ angular.module('quizApp', [])
             $scope.$apply(function() {
                 vm.message = '';
                 vm.symbol = '';
-                vm.question = questions.get();
+                questions.get().then(function(res) {
+                    $scope.$apply(function() {
+                        vm.question = res;
+                    });
+                });
                 vm.disableButtons = false;
                 vm.flashAnswer = false;
             });
@@ -132,5 +197,9 @@ angular.module('quizApp', [])
         window.speechSynthesis.speak(msg);
     }
 
-    this.question = questions.get();
+    questions.get().then(function(res) {
+        $scope.$apply(function() {
+             vm.question = res;
+        });
+    });
 }]);

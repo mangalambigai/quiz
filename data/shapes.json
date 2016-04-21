@@ -1,0 +1,32 @@
+[
+	{
+		"question": "Click on the square",
+		"answer": "■",
+		"prompt": "This is the square"
+	},
+	{
+		"question": "Click on the circle",
+		"answer": "●",
+		"prompt": "This is the circle"
+	},
+	{
+		"question": "Click on the triangle",
+		"answer": "▲",
+		"prompt": "This is the triangle"
+	},
+	{
+		"question": "Click on the rectangle",
+		"answer": "▬",
+		"prompt": "This is the rectangle"
+	},
+	{
+		"question": "Click on the diamond",
+		"answer": "◆",
+		"prompt": "This is the diamond"
+	},
+	{
+		"question": "Click on the semicircle",
+		"answer": "◗",
+		"prompt": "This is the semicircle"
+	}
+]
