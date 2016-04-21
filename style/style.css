@@ -3,6 +3,9 @@ html, body, main {
 	height: 100%;
 }
 
+body {
+	background-color: steelblue;
+}
 .vertical-center {
 	width:100%;
 	position: absolute;
@@ -11,6 +14,7 @@ html, body, main {
 }
 
 .flex-container {
+	height: 100%;
 	display: flex;
 	flex-wrap: wrap;
 }
@@ -24,7 +28,7 @@ html, body, main {
 	width: 100%;
 }
 
-.question, .answer {
+.question, .answer,.score {
 	width: 100%;
 }
 
