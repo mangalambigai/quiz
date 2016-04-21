@@ -108,21 +108,21 @@ angular.module('quizApp', [])
             this.message = cheerMsg.message;
             this.symbol = cheerMsg.symbol;
             var msg = new SpeechSynthesisUtterance(this.message);
-            window.speechSynthesis.speak(msg);
-
             msg.onend=function(e) {
                 //After cheering, clear it, show the next question, and enable the buttons
                 $scope.$apply(function() {
-                    vm.message = ' ';
-                    vm.symbol = ' ';
+                    vm.message = '';
+                    vm.symbol = '';
                     vm.question = questions.get();
                     vm.disableButtons = false;
                 });
                 var msg1 = new SpeechSynthesisUtterance(vm.question.question);
                 window.speechSynthesis.speak(msg1);
             };
+            window.speechSynthesis.speak(msg);
         } else {
             //TODO: Flash the correct answer
+            this.disableButtons = false;
         }
     }
 
