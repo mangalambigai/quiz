@@ -22,7 +22,7 @@
             </div>
             <div ng-repeat="option in quiz.question.options"
                 class="text-center answer">
-                <button class="btn btn-primary btn-lg" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
+                <button class="btn btn-primary btn-lg" ng-class="{'flash-answer': quiz.flashAnswer && option == quiz.question.answer}" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
                     <h2>{{option}}</h2>
                 </button>
             </div>

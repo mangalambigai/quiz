@@ -83,7 +83,8 @@ angular.module('quizApp', [])
             return {
                 question: 'Choose the number ' + number,
                 answer: number,
-                options: options
+                options: options,
+                answerPrompt: 'No, this is the number '+ number
             }
         }
     })
@@ -99,31 +100,36 @@ angular.module('quizApp', [])
 .controller('QuizCtrl', ['$scope', 'cheer', 'questions', function ($scope, cheer, questions) {
     var vm = this;
     this.disableButtons = false;
+    this.flashAnswer = false;
     this.clicked = function (option) {
         this.disableButtons = true;
+        var thingToSay = '';
         if (option == this.question.answer) {
             //when a correct answer is clicked
             //create a cheer and say it
             var cheerMsg = cheer.get();
             this.message = cheerMsg.message;
             this.symbol = cheerMsg.symbol;
-            var msg = new SpeechSynthesisUtterance(this.message);
-            msg.onend=function(e) {
-                //After cheering, clear it, show the next question, and enable the buttons
-                $scope.$apply(function() {
-                    vm.message = '';
-                    vm.symbol = '';
-                    vm.question = questions.get();
-                    vm.disableButtons = false;
-                });
-                var msg1 = new SpeechSynthesisUtterance(vm.question.question);
-                window.speechSynthesis.speak(msg1);
-            };
-            window.speechSynthesis.speak(msg);
+            thingToSay = this.message;
         } else {
-            //TODO: Flash the correct answer
-            this.disableButtons = false;
+            // Flash the correct answer
+            thingToSay = this.question.answerPrompt;
+            this.flashAnswer = true;
         }
+        var msg = new SpeechSynthesisUtterance(thingToSay);
+        msg.onend=function(e) {
+            //After cheering, clear it, show the next question, and enable the buttons
+            $scope.$apply(function() {
+                vm.message = '';
+                vm.symbol = '';
+                vm.question = questions.get();
+                vm.disableButtons = false;
+                vm.flashAnswer = false;
+            });
+            var msg1 = new SpeechSynthesisUtterance(vm.question.question);
+            window.speechSynthesis.speak(msg1);
+        };
+        window.speechSynthesis.speak(msg);
     }
 
     this.question = questions.get();
