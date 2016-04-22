@@ -205,9 +205,11 @@ angular.module('quizApp', ['ngRoute'])
     this.disableButtons = false;
     this.flashAnswer = false;
     this.clicked = function (option) {
+        this.score.attempted++;
         this.disableButtons = true;
         var thingToSay = '';
         if (option == this.question.answer) {
+            this.score.correct++;
             //when a correct answer is clicked
             //create a cheer and say it
             var cheerMsg = cheer.get();
@@ -242,6 +244,7 @@ angular.module('quizApp', ['ngRoute'])
         window.speechSynthesis.speak(msg1);
     };
 
+    this.score = {correct:0, attempted:0};
     questions.getList('data/'+$routeParams.id).then(function(list) {
         vm.questionList = list.data;
         vm.askNextQuestion();
