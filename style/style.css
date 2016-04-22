@@ -1,0 +1,112 @@
+html, body, main {
+	width: 100%;
+	height: 100%;
+}
+
+.full-height {
+	height:100%;
+}
+
+body {
+	background-color: steelblue;
+}
+.vertical-center {
+	width:100%;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.flex-container {
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.questionbox-inner {
+	background-color: lightblue;
+	border: 2px solid blue;
+}
+
+.cheerbox {
+	width: 100%;
+}
+
+.question, .answer,.score {
+	width: 100%;
+}
+
+.cheerbox-inner {
+	background-color: lightpink;
+	border: 2px solid purple;
+	width: 400px;
+	max-width: 90%;
+	margin: auto;
+}
+
+.questionbox-inner button {
+	width: 90%;
+	margin: 10px auto;
+}
+
+.flash-answer {
+	background-color: orange;
+}
+
+.cheer-picture h1{
+	font-size: 10em;
+	color: purple;
+}
+
+.answer button h1 {
+	font-size: 3em;
+}
+
+@media screen and (min-width: 768px) {
+	.answer {
+		width: 33%;
+	}
+	.questionbox-inner {
+		width: 90%;
+		margin: auto;
+	}
+	.answer button h1 {
+		font-size: 5em;
+	}
+}
+
+.flex-container-sticker {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.sticker-sheet {
+	background-color: white;
+	width:100%;
+	flex-grow: 1;
+	border: 1px solid red;
+}
+
+.sticker-roll {
+	width: 100%;
+	height: 100px;
+	background-color: white;
+	color: blue;
+	border: 1px solid green;
+	flex-wrap: nowrap;
+	padding: 0px;
+}
+
+.sticker-roll h1 {
+	font-size: 5em;
+}
+
+.stickers {
+	font-size: 5em;
+	color: blue;
+	flex-direction: row;
+	display: inline;
+}
+
