@@ -82,6 +82,8 @@ body {
 	.answer button h1 {
 		font-size: 5em;
 	}
+
+
 }
 
 .flex-container-sticker {
@@ -117,5 +119,11 @@ body {
 	color: blue;
 	flex-direction: row;
 	display: inline;
+}
+
+.menubox-inner {
+	background-color: lightblue;
+	border: 2px solid blue;
+	margin: auto;
 }
 

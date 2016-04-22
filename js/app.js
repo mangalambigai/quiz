@@ -18,7 +18,7 @@ function shuffle(arr) {
 angular.module('quizApp', ['ngRoute'])
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-    .when('/quizthree', {
+    .when('/quiz/:id', {
         templateUrl:'partials/quizthree.html',
         controller: 'QuizCtrl',
         controllerAs: 'quiz'
@@ -28,8 +28,11 @@ angular.module('quizApp', ['ngRoute'])
         controller: 'StickerCtrl',
         controllerAs: 'sticker'
     })
+    .when('/home', {
+        templateUrl: 'partials/main.html'
+    })
     .otherwise({
-        redirectTo: '/quizthree'
+        redirectTo: '/home'
     });
 
 }])
@@ -51,20 +54,6 @@ angular.module('quizApp', ['ngRoute'])
                 'Way to go!',
                 'You are a genius!'
             ];
-            /*
-
-            fa-futbol-o
-            fa-bicycle
-            fa-truck
-            fa-trophy
-            heart
-            heart-o
-            smile-o
-            fa-star
-            rocket
-            paw
-
-            */
 
             var icons=[
                 'fa-check',
@@ -92,7 +81,6 @@ angular.module('quizApp', ['ngRoute'])
         }
     });
 })
-
 /**
  * @ngdoc service
  * @name questions
@@ -101,13 +89,13 @@ angular.module('quizApp', ['ngRoute'])
  * Gets randomly generated questions
  */
 .service('questions', ['$http', function ($http) {
+/*
+//Use this while using multiple pools at a time
     var questionPools=[];
-    //TODO: load a list of jsons to questionPools
     var jsons = [
         'data/shapes.json',
         'data/numbers.json'
     ];
-
     var poolpromise = new Promise( function (resolve, reject) {
         Promise.all(jsons.map($http.get))
         .then(function(pools) {
@@ -117,12 +105,13 @@ angular.module('quizApp', ['ngRoute'])
             resolve(questionPools);
         });
     });
-
+*/
     return ({
-        get: function() {
-            return poolpromise.then(function() {
-                //TODO: select random/ sequential pool from questionPools
-                var pool = questionPools[0];
+        getList: function(jsonname) {
+            return $http.get(jsonname);
+        },
+        get: function(pool) {
+            //return poolpromise.then(function() {
 
                 //get the number of questions in the selected pool
                 var numQuestions = pool.length;
@@ -165,7 +154,7 @@ angular.module('quizApp', ['ngRoute'])
                     answerPrompt: pool[questionIndex].prompt
                 };
 
-            });
+            //});
         }
         /*
         get: function () {
@@ -210,7 +199,8 @@ angular.module('quizApp', ['ngRoute'])
  * @description
  * Controller for the quiz page
  */
-.controller('QuizCtrl', ['$scope', 'cheer', 'questions', function ($scope, cheer, questions) {
+.controller('QuizCtrl', ['$scope', '$routeParams', 'cheer', 'questions',
+    function ($scope, $routeParams, cheer, questions) {
     var vm = this;
     this.disableButtons = false;
     this.flashAnswer = false;
@@ -247,16 +237,17 @@ angular.module('quizApp', ['ngRoute'])
     };
 
     this.askNextQuestion = function() {
-        questions.get().then(function(res) {
-            $scope.$apply(function() {
-                vm.question = res;
-            });
-            var msg1 = new SpeechSynthesisUtterance(vm.question.question);
-            window.speechSynthesis.speak(msg1);
-        });
+        vm.question = questions.get(this.questionList);
+        var msg1 = new SpeechSynthesisUtterance(vm.question.question);
+        window.speechSynthesis.speak(msg1);
     };
 
-    this.askNextQuestion();
+    questions.getList('data/'+$routeParams.id).then(function(list) {
+        vm.questionList = list.data;
+        vm.askNextQuestion();
+    });
+
+
 }])
 
 /**
@@ -267,14 +258,32 @@ angular.module('quizApp', ['ngRoute'])
  * Controller for the sticker page
  */
 .controller('StickerCtrl', ['$scope', function($scope) {
+/*    //These are cool unicodes, but safari displays them really small,
+    //so I am not going to use them for now
     this.stickers = ['🐄','🐇','🐈','🐞','🐟','🐠','🐡','🐢','🐣',
     '🐤','🐥','🐦','🐧'];
     //more sticker options
-    /*,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
-    '🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
-    '🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];*/
+    //,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
+    //'🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
+    //'🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];
     this.currstickers = [];
     this.pick = function(sticker) {
         this.currstickers.push({id: this.currstickers.length, sticker: sticker});
     };
+    */
+
+    //Font awesome sticker choices:
+         /*
+            fa-futbol-o
+            fa-bicycle
+            fa-truck
+            fa-trophy
+            heart
+            heart-o
+            smile-o
+            fa-star
+            rocket
+            paw
+            */
+
 }]);
