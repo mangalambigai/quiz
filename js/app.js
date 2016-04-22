@@ -57,11 +57,17 @@ angular.module('quizApp', [])
 .service('questions', ['$http', function ($http) {
     var questionPools=[];
     //TODO: load a list of jsons to questionPools
+    var jsons = [
+        'data/shapes.json',
+        'data/numbers.json'
+    ];
+
     var poolpromise = new Promise( function (resolve, reject) {
-        $http.get('data/shapes.json')
-        .then(function(questions) {
-            console.log(questions.data);
-            questionPools.push(questions.data);
+        Promise.all(jsons.map($http.get))
+        .then(function(pools) {
+            pools.forEach(function(pool){
+                questionPools.push(pool.data);
+            });
             resolve(questionPools);
         });
     });
