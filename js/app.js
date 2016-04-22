@@ -51,14 +51,43 @@ angular.module('quizApp', ['ngRoute'])
                 'Way to go!',
                 'You are a genius!'
             ];
+            /*
+
+            fa-futbol-o
+            fa-bicycle
+            fa-truck
+            fa-trophy
+            heart
+            heart-o
+            smile-o
+            fa-star
+            rocket
+            paw
+
+            */
+
+            var icons=[
+                'fa-check',
+                'fa-thumbs-o-up',
+                'fa-thumbs-up',
+                'fa-trophy',
+                'fa-heart',
+                'fa-heart-o',
+                'fa-smile-o',
+                'fa-star',
+                'fa-rocket',
+                'fa-paw'
+            ];
+
             var symbols = ['✓', '❤', '🎈', '🌠', '👍', '🖒',
                 '🌟', '😊', '🚀', '❀', '🌷', '🌹'
-            ]
+            ];
             return {
                 message: cheers[Math.floor(Math.random() *
                     cheers.length)],
                 symbol: symbols[Math.floor(Math.random() *
-                    symbols.length)]
+                    symbols.length)],
+                icon: icons[Math.floor(Math.random()*icons.length)]
             };
         }
     });
@@ -134,7 +163,7 @@ angular.module('quizApp', ['ngRoute'])
                     answer: pool[questionIndex].answer,
                     options: options,
                     answerPrompt: pool[questionIndex].prompt
-                }
+                };
 
             });
         }
@@ -171,7 +200,7 @@ angular.module('quizApp', ['ngRoute'])
             }
         }
         */
-    })
+    });
 }])
 
 /**
@@ -194,6 +223,7 @@ angular.module('quizApp', ['ngRoute'])
             var cheerMsg = cheer.get();
             this.message = cheerMsg.message;
             this.symbol = cheerMsg.symbol;
+            this.icon = cheerMsg.icon;
             thingToSay = this.message;
         } else {
             // Flash the correct answer
@@ -202,29 +232,31 @@ angular.module('quizApp', ['ngRoute'])
         }
         var msg = new SpeechSynthesisUtterance(thingToSay);
         msg.onend=function(e) {
+            console.log('onend');
             //After cheering, clear it, show the next question, and enable the buttons
             $scope.$apply(function() {
                 vm.message = '';
                 vm.symbol = '';
                 vm.disableButtons = false;
                 vm.flashAnswer = false;
-                questions.get().then(function(res) {
-                    $scope.$apply(function() {
-                        vm.question = res;
-                    });
-                    var msg1 = new SpeechSynthesisUtterance(vm.question.question);
-                    window.speechSynthesis.speak(msg1);
-                });
+                vm.askNextQuestion();
             });
         };
+        console.log('speaking');
         window.speechSynthesis.speak(msg);
-    }
+    };
 
-    questions.get().then(function(res) {
-        $scope.$apply(function() {
-             vm.question = res;
+    this.askNextQuestion = function() {
+        questions.get().then(function(res) {
+            $scope.$apply(function() {
+                vm.question = res;
+            });
+            var msg1 = new SpeechSynthesisUtterance(vm.question.question);
+            window.speechSynthesis.speak(msg1);
         });
-    });
+    };
+
+    this.askNextQuestion();
 }])
 
 /**

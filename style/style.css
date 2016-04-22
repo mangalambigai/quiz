@@ -47,10 +47,19 @@ body {
 .questionbox-inner button {
 	width: 90%;
 	margin: 10px auto;
+	max-height: 20%;
 }
 
 .flash-answer {
 	background-color: orange;
+}
+
+.cheer-picture {
+	text-align: center;
+}
+
+.cheer-picture i {
+	color: purple;
 }
 
 .cheer-picture h1{
