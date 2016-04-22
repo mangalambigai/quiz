@@ -15,7 +15,19 @@ function shuffle(arr) {
  * @name quizApp
  * @requires
  */
-angular.module('quizApp', [])
+angular.module('quizApp', ['ngRoute'])
+.config(['$routeProvider', function($routeProvider) {
+    $routeProvider
+    .when('/quizthree', {
+        templateUrl:'partials/quizthree.html',
+        controller: 'QuizCtrl',
+        controllerAs: 'quiz'
+    })
+    .otherwise({
+        redirectTo: '/quizthree'
+    });
+
+}])
 /**
  * @ngdoc service
  * @name cheer
