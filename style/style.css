@@ -44,7 +44,7 @@ body {
 	margin: auto;
 }
 
-.questionbox-inner button {
+.questionbox-inner .answer-btn {
 	width: 90%;
 	margin: 10px auto;
 	max-height: 20%;

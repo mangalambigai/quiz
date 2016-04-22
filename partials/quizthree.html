@@ -1,14 +1,17 @@
 <!--div class="vertical-center" -->
 <div class="flex-container questionbox-inner">
-    <div class="text-right score">
-        <h4>Score 0/0</h4>
+    <div class="score">
+        <a href="#/menu">
+            <button class="btn btn-xs btn-primary">
+            <i class="fa fa-arrow-circle-left fa-2x"></i></button></a>
+            <strong class="text-right">Score 0/0</strong>
     </div>
     <div class="text-center question">
         <h1>{{quiz.question.question}}</h1>
     </div>
     <div ng-repeat="option in quiz.question.options"
         class="text-center answer">
-        <button class="btn btn-primary btn-lg" ng-class="{'flash-answer': quiz.flashAnswer && option == quiz.question.answer}" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
+        <button class="answer-btn btn btn-primary btn-lg" ng-class="{'flash-answer': quiz.flashAnswer && option == quiz.question.answer}" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
             <h1>{{option}}</h1>
         </button>
     </div>
