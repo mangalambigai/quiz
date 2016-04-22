@@ -74,3 +74,39 @@ body {
 		font-size: 5em;
 	}
 }
+
+.flex-container-sticker {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.sticker-sheet {
+	background-color: white;
+	width:100%;
+	flex-grow: 1;
+	border: 1px solid red;
+}
+
+.sticker-roll {
+	width: 100%;
+	height: 100px;
+	background-color: white;
+	color: blue;
+	border: 1px solid green;
+	flex-wrap: nowrap;
+	padding: 0px;
+}
+
+.sticker-roll h1 {
+	font-size: 5em;
+}
+
+.stickers {
+	font-size: 5em;
+	color: blue;
+	flex-direction: row;
+	display: inline;
+}
+

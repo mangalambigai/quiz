@@ -23,6 +23,11 @@ angular.module('quizApp', ['ngRoute'])
         controller: 'QuizCtrl',
         controllerAs: 'quiz'
     })
+    .when('/stickers', {
+        templateUrl: 'partials/stickers.html',
+        controller: 'StickerCtrl',
+        controllerAs: 'sticker'
+    })
     .otherwise({
         redirectTo: '/quizthree'
     });
@@ -220,4 +225,24 @@ angular.module('quizApp', ['ngRoute'])
              vm.question = res;
         });
     });
+}])
+
+/**
+ * @ngdoc controller
+ * @name StickerCtrl
+ *
+ * @description
+ * Controller for the sticker page
+ */
+.controller('StickerCtrl', ['$scope', function($scope) {
+    this.stickers = ['🐄','🐇','🐈','🐞','🐟','🐠','🐡','🐢','🐣',
+    '🐤','🐥','🐦','🐧'];
+    //more sticker options
+    /*,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
+    '🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
+    '🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];*/
+    this.currstickers = [];
+    this.pick = function(sticker) {
+        this.currstickers.push({id: this.currstickers.length, sticker: sticker});
+    };
 }]);
