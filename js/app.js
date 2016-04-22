@@ -183,16 +183,16 @@ angular.module('quizApp', [])
             $scope.$apply(function() {
                 vm.message = '';
                 vm.symbol = '';
+                vm.disableButtons = false;
+                vm.flashAnswer = false;
                 questions.get().then(function(res) {
                     $scope.$apply(function() {
                         vm.question = res;
                     });
+                    var msg1 = new SpeechSynthesisUtterance(vm.question.question);
+                    window.speechSynthesis.speak(msg1);
                 });
-                vm.disableButtons = false;
-                vm.flashAnswer = false;
             });
-            var msg1 = new SpeechSynthesisUtterance(vm.question.question);
-            window.speechSynthesis.speak(msg1);
         };
         window.speechSynthesis.speak(msg);
     }
