@@ -6,13 +6,15 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var cleanCSS = require('gulp-clean-css');
 
-gulp.task('default', ['copy-html', 'copy-data','copy-bower', 'styles', 'lint', 'scripts'], function() {
+gulp.task('default', ['copy-html', 'copy-data','copy-manifest','copy-bower', 'styles', 'lint', 'scripts'], function() {
 	gulp.watch('js/**/*.js', ['lint', 'scripts']);
+	gulp.watch('sw.js', ['lint', 'scripts']);
 	gulp.watch('partials/**/*.html', ['copy-html']);
 	gulp.watch('index.html', ['copy-html']);
 	gulp.watch('style/*.css', ['styles']);
 	gulp.watch('data/**/*.json', ['copy-data']);
 	gulp.watch('data/**/*.csv', ['copy-data']);
+	gulp.watch('./dist/sw.js').on('change', browserSync.reload);
 	gulp.watch('./dist/index.html').on('change', browserSync.reload);
 	gulp.watch('./dist/partials/*.html').on('change', browserSync.reload);
 	gulp.watch('./dist/js/**/*.js').on('change', browserSync.reload);
@@ -32,16 +34,26 @@ gulp.task('dist', [
 ]);
 
 gulp.task('scripts', function() {
-	gulp.src('js/**/*.js')
+	gulp.src('js/lib/*.js')
+		.pipe(gulp.dest('dist/js/lib'));
+	gulp.src('js/*.js')
 		.pipe(concat('all.js'))
 		.pipe(gulp.dest('dist/js'));
+	gulp.src('sw.js')
+		.pipe(gulp.dest('dist'));
 });
 
 gulp.task('scripts-dist', function() {
-	gulp.src('js/**/*.js')
+	gulp.src('js/lib/*.js')
+		.pipe(uglify())
+		.pipe(gulp.dest('dist/js/lib'));
+	gulp.src('js/*.js')
 		.pipe(concat('all.js'))
 		.pipe(uglify())
 		.pipe(gulp.dest('dist/js'));
+	gulp.src('sw.js')
+		.pipe(uglify())
+		.pipe(gulp.dest('dist'));
 });
 
 gulp.task('copy-html', function() {
@@ -54,6 +66,13 @@ gulp.task('copy-html', function() {
 gulp.task('copy-bower', function() {
 	gulp.src('bower_components/**/*')
 		.pipe(gulp.dest('./dist/bower_components'));
+});
+
+gulp.task('copy-manifest', function() {
+	gulp.src('*.png')
+		.pipe(gulp.dest('./dist'));
+	gulp.src('manifest.json')
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('copy-data', function() {
