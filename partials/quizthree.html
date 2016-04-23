@@ -7,8 +7,8 @@
             <strong class="text-right">Score {{quiz.score.correct}}/{{quiz.score.attempted}}</strong>
     </div>
     <div class="text-center question">
-        <h1>{{quiz.question.question}}</h1>
-        <h2>{{quiz.question.questionprompt}}</h2>
+        <h1 class="question-lg">{{quiz.question.question}}</h1>
+        <h2 class="questionprompt">{{quiz.question.questionprompt}}</h2>
     </div>
     <div ng-repeat="option in quiz.question.options"
         class="text-center answer">

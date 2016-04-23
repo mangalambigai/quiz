@@ -36,6 +36,10 @@ body {
 	width: 100%;
 }
 
+.question-lg {
+	display: none;
+}
+
 .cheerbox-inner {
 	background-color: lightpink;
 	border: 2px solid purple;
@@ -47,7 +51,6 @@ body {
 .questionbox-inner .answer-btn {
 	width: 90%;
 	margin: 10px auto;
-	max-height: 20%;
 }
 
 .flash-answer {
@@ -69,6 +72,12 @@ body {
 
 .answer button h1 {
 	font-size: 3em;
+	margin: 0;
+}
+
+.question .questionprompt {
+	font-size: 5em;
+	color: darkblue;
 }
 
 @media screen and (min-width: 768px) {
@@ -81,8 +90,16 @@ body {
 	}
 	.answer button h1 {
 		font-size: 5em;
+		margin-top: 20px;
+		margin-bottom: 10px;
 	}
-
+	.menubox-inner {
+		width: 50%;
+		margin: auto;
+	}
+	.question-lg {
+		display: block;
+	}
 
 }
 
