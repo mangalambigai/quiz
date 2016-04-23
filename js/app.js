@@ -150,6 +150,7 @@ angular.module('quizApp', ['ngRoute'])
                 return {
                     question: pool[questionIndex].question,
                     answer: pool[questionIndex].answer,
+                    questionprompt: pool[questionIndex].questionprompt,
                     options: options,
                     answerPrompt: pool[questionIndex].prompt
                 };
@@ -288,5 +289,86 @@ angular.module('quizApp', ['ngRoute'])
             rocket
             paw
             */
+
+}])
+/**
+ * @ngdoc controller
+ * @name ServiceController
+ *
+ * @description
+ * Controller for service worker and its updates
+ */
+.controller('ServiceController',['$scope', function($scope) {
+
+    /**
+     * Starts the service worker
+     */
+    $scope.init = function() {
+        $scope.newversion = false;
+        if (!navigator.serviceWorker) return;
+
+        var swpath=window.location.pathname+'sw.js';
+
+        console.log('pathname: ' + swpath);
+
+        navigator.serviceWorker.register(swpath).then(function(reg) {
+            if (!navigator.serviceWorker.controller) {
+                return;
+            }
+
+            if (reg.waiting) {
+                $scope.updateReady(reg.waiting);
+                return;
+            }
+
+            if (reg.installing) {
+                $scope.trackInstalling(reg.installing);
+                return;
+            }
+
+            reg.addEventListener('updatefound', function() {
+                $scope.trackInstalling(reg.installing);
+            });
+        });
+        // Ensure refresh is only called once.
+        // This works around a bug in "force update on reload".
+        var refreshing;
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+            if (refreshing) return;
+            window.location.reload();
+            refreshing = true;
+        });
+    };
+
+    /**
+     * When a worker is installed, display prompt
+     */
+    $scope.trackInstalling = function(worker) {
+        worker.addEventListener('statechange', function() {
+            if (worker.state == 'installed') {
+                $scope.updateReady(worker);
+            }
+        });
+    };
+
+
+    /**
+     * When a worker is installed, display prompt
+     */
+    $scope.updateReady = function(worker) {
+        $scope.$apply(function() {
+            $scope.readyWorker = worker;
+            $scope.newUpdateReady = true;
+        });
+    };
+
+    /**
+     * When user wants to upgrade, tell the worker to skip waiting
+     */
+    $scope.update = function() {
+        $scope.readyWorker.postMessage({
+            action: 'skipWaiting'
+        });
+    };
 
 }]);
