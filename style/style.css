@@ -159,7 +159,7 @@ body {
 		display: block;
 	}
 
-	.menubox-inner a {
+	.menubox-inner button {
 		width: 50%;
 	}
 }
