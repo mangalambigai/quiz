@@ -27,6 +27,16 @@
 	{
 		"question": "Click on the semicircle",
 		"answer": "◗",
-		"prompt": "This is the semicircle"
+		"prompt": "This is the semicircle."
+	},
+	{
+		"question": "Which is the heart?",
+		"answer": "❤",
+		"prompt": "This is the heart."
+	},
+	{
+		"question": "Which is the star?",
+		"answer": "★",
+		"prompt": "This is the star."
 	}
 ]

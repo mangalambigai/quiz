@@ -1,0 +1,32 @@
+[
+	{
+		"question": "How many stars do you see?",
+		"questionprompt": "★",
+		"answer": "1",
+		"prompt": "There is one star."
+	},
+	{
+		"question": "How many hearts do you see?",
+		"questionprompt": "❤❤",
+		"answer": "2",
+		"prompt": "There are two hearts."
+	},
+	{
+		"question": "How many squares do you see?",
+		"questionprompt": "■■■",
+		"answer": "3",
+		"prompt": "There are three squares."
+	},
+	{
+		"question": "How many stars do you see?",
+		"questionprompt": "★★★★",
+		"answer": "4",
+		"prompt": "There are four stars."
+	},
+	{
+		"question": "How many circles do you see?",
+		"questionprompt": "●●●●●",
+		"answer": "5",
+		"prompt": "There are five circles."
+	}
+]

@@ -1,14 +1,18 @@
 <!--div class="vertical-center" -->
 <div class="flex-container questionbox-inner">
-    <div class="text-right score">
-        <h4>Score 0/0</h4>
+    <div class="score">
+        <a href="#/menu">
+            <button class="btn btn-xs btn-primary">
+            <i class="fa fa-arrow-circle-left fa-2x"></i></button></a>
+            <strong class="text-right">Score {{quiz.score.correct}}/{{quiz.score.attempted}}</strong>
     </div>
     <div class="text-center question">
-        <h1>{{quiz.question.question}}</h1>
+        <h1 class="question-lg">{{quiz.question.question}}</h1>
+        <h2 class="questionprompt">{{quiz.question.questionprompt}}</h2>
     </div>
     <div ng-repeat="option in quiz.question.options"
         class="text-center answer">
-        <button class="btn btn-primary btn-lg" ng-class="{'flash-answer': quiz.flashAnswer && option == quiz.question.answer}" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
+        <button class="answer-btn btn btn-primary btn-lg" ng-class="{'flash-answer': quiz.flashAnswer && option == quiz.question.answer}" ng-disabled="quiz.disableButtons" ng-click="quiz.clicked(option)">
             <h1>{{option}}</h1>
         </button>
     </div>
@@ -21,7 +25,8 @@
         <h1 class="text-center">{{quiz.message}}</h1>
     </div>
     <div class="cheer-picture">
-        <h1 class="text-center">{{quiz.symbol}}</h1>
+        <i class="fa {{quiz.icon}} fa-5x " aria-hidden="true"></i>
+        <!--h1 class="text-center">{{quiz.symbol}}</h1-->
     </div>
     </div>
 </div>

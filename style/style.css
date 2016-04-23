@@ -36,6 +36,10 @@ body {
 	width: 100%;
 }
 
+.question-lg {
+	display: none;
+}
+
 .cheerbox-inner {
 	background-color: lightpink;
 	border: 2px solid purple;
@@ -44,13 +48,21 @@ body {
 	margin: auto;
 }
 
-.questionbox-inner button {
+.questionbox-inner .answer-btn {
 	width: 90%;
 	margin: 10px auto;
 }
 
 .flash-answer {
 	background-color: orange;
+}
+
+.cheer-picture {
+	text-align: center;
+}
+
+.cheer-picture i {
+	color: purple;
 }
 
 .cheer-picture h1{
@@ -60,20 +72,14 @@ body {
 
 .answer button h1 {
 	font-size: 3em;
+	margin: 0;
 }
 
-@media screen and (min-width: 768px) {
-	.answer {
-		width: 33%;
-	}
-	.questionbox-inner {
-		width: 90%;
-		margin: auto;
-	}
-	.answer button h1 {
-		font-size: 5em;
-	}
+.question .questionprompt {
+	font-size: 5em;
+	color: darkblue;
 }
+
 
 .flex-container-sticker {
 	height: 100%;
@@ -110,3 +116,50 @@ body {
 	display: inline;
 }
 
+.menubox-inner {
+	background-color: lightblue;
+	border: 2px solid blue;
+	margin: auto;
+}
+
+.menu-item {
+	width: 100%;
+	text-align: center;
+}
+
+.menubox-inner a,
+.menubox-inner button{
+	width: 100%;
+	padding: 0;
+}
+
+.menubox-inner h1 {
+	padding: 0;
+}
+
+@media screen and (min-width: 768px) {
+	.answer {
+		width: 33%;
+	}
+	.questionbox-inner {
+		width: 90%;
+		margin: auto;
+	}
+	.answer button h1 {
+		font-size: 5em;
+		margin-top: 20px;
+		margin-bottom: 10px;
+	}
+	.menubox-inner {
+		width: 50%;
+		margin: auto;
+	}
+
+	.question-lg {
+		display: block;
+	}
+
+	.menubox-inner button {
+		width: 50%;
+	}
+}
