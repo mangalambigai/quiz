@@ -122,6 +122,21 @@ body {
 	margin: auto;
 }
 
+.menu-item {
+	width: 100%;
+	text-align: center;
+}
+
+.menubox-inner a,
+.menubox-inner button{
+	width: 100%;
+	padding: 0;
+}
+
+.menubox-inner h1 {
+	padding: 0;
+}
+
 @media screen and (min-width: 768px) {
 	.answer {
 		width: 33%;
@@ -139,18 +154,12 @@ body {
 		width: 50%;
 		margin: auto;
 	}
+
 	.question-lg {
 		display: block;
 	}
 
 	.menubox-inner a {
-		width: 100%;
-		padding: 0;
-	}
-
-	.menubox-inner button {
 		width: 50%;
-		margin: auto;
 	}
-
 }

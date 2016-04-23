@@ -16,10 +16,10 @@ function shuffle(arr) {
  * @requires
  */
 angular.module('quizApp', ['ngRoute'])
-.config(['$routeProvider', function($routeProvider) {
+.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/quiz/:id', {
-        templateUrl:'partials/quizthree.html',
+        templateUrl: 'partials/quizthree.html',
         controller: 'QuizCtrl',
         controllerAs: 'quiz'
     })
@@ -29,7 +29,9 @@ angular.module('quizApp', ['ngRoute'])
         controllerAs: 'sticker'
     })
     .when('/home', {
-        templateUrl: 'partials/main.html'
+        templateUrl: 'partials/main.html',
+        controller: 'MainCtrl',
+        controllerAs: 'menu'
     })
     .otherwise({
         redirectTo: '/home'
@@ -55,7 +57,7 @@ angular.module('quizApp', ['ngRoute'])
                 'You are a genius!'
             ];
 
-            var icons=[
+            var icons = [
                 'fa-check',
                 'fa-thumbs-o-up',
                 'fa-thumbs-up',
@@ -76,7 +78,8 @@ angular.module('quizApp', ['ngRoute'])
                     cheers.length)],
                 symbol: symbols[Math.floor(Math.random() *
                     symbols.length)],
-                icon: icons[Math.floor(Math.random()*icons.length)]
+                icon: icons[Math.floor(Math.random() *
+                    icons.length)]
             };
         }
     });
@@ -89,107 +92,60 @@ angular.module('quizApp', ['ngRoute'])
  * Gets randomly generated questions
  */
 .service('questions', ['$http', function ($http) {
-/*
-//Use this while using multiple pools at a time
-    var questionPools=[];
-    var jsons = [
-        'data/shapes.json',
-        'data/numbers.json'
-    ];
-    var poolpromise = new Promise( function (resolve, reject) {
-        Promise.all(jsons.map($http.get))
-        .then(function(pools) {
-            pools.forEach(function(pool){
-                questionPools.push(pool.data);
-            });
-            resolve(questionPools);
-        });
-    });
-*/
     return ({
-        getList: function(jsonname) {
+
+        //gets the list from a json file
+        getList: function (jsonname) {
             return $http.get(jsonname);
         },
-        get: function(pool) {
-            //return poolpromise.then(function() {
 
-                //get the number of questions in the selected pool
-                var numQuestions = pool.length;
-                //choose a random question
-                var questionIndex = Math.floor(Math.random()*numQuestions);
-                //hardcode 3 options for now, since option button width is 33%
-                var optioncount = 3;
-
-                var options = pool[questionIndex].options;
-                if (!options)
-                {
-                    //There are no options specified in question.
-                    //Select randomly from other answers.
-                    options = [];
-                    //make sure the correct answer is in the options!
-                    options.push(pool[questionIndex].answer);
-                    //Add some other answers
-
-                    for (var i = 1; i < optioncount; i++) {
-                        var findAnotherOption = true;
-                        while (findAnotherOption) {
-                            var opt = pool[Math.floor(Math.random() * numQuestions)].answer;
-                            //if this option is already choosen, choose another one
-                            findAnotherOption = false;
-                            for (var j = 0; j < i; j++) {
-                                if (opt === options[j])
-                                    findAnotherOption = true;
-                            }
-                            if (!findAnotherOption)
-                                options[i] = opt;
-                        }
-                    }
-                    options = shuffle(options);
-                }
-
-                return {
-                    question: pool[questionIndex].question,
-                    answer: pool[questionIndex].answer,
-                    questionprompt: pool[questionIndex].questionprompt,
-                    options: options,
-                    answerPrompt: pool[questionIndex].prompt
-                };
-
-            //});
-        }
-        /*
-        get: function () {
-            //TODO: get alphabets,
-            //TODO: put in logic to select questions based on previous answers
-            var number = Math.floor(Math.random() * 10);
+        //gets a randomly chosen question from a pool of questions
+        get: function (pool) {
+            //get the number of questions in the selected pool
+            var numQuestions = pool.length;
+            //choose a random question
+            var questionIndex = Math.floor(Math.random() *
+                numQuestions);
+            //hardcode 3 options for now, since option button width is 33%
             var optioncount = 3;
-            var options = [];
 
-            options[0] = number;
-            for (var i = 1; i < optioncount; i++) {
-                var findAnotherOption = true;
-                while (findAnotherOption) {
-                    var opt = Math.floor(Math.random() * 10);
-                    //if this option is already choosen, choose another one
-                    findAnotherOption = false;
-                    for (var j = 0; j < i; j++) {
-                        if (opt === options[j])
-                            findAnotherOption = true;
+            var options = pool[questionIndex].options;
+            if (!options) {
+                //There are no options specified in question.
+                //Select randomly from other answers.
+                options = [];
+                //make sure the correct answer is in the options!
+                options.push(pool[questionIndex].answer);
+                //Add some other answers
+
+                for (var i = 1; i < optioncount; i++) {
+                    var findAnotherOption = true;
+                    while (findAnotherOption) {
+                        var opt = pool[Math.floor(Math.random() *
+                            numQuestions)].answer;
+                        //if this option is already choosen, choose another one
+                        findAnotherOption = false;
+                        for (var j = 0; j < i; j++) {
+                            if (opt === options[j])
+                                findAnotherOption =
+                                true;
+                        }
+                        if (!findAnotherOption)
+                            options[i] = opt;
                     }
-                    if (!findAnotherOption)
-                        options[i] = opt;
                 }
+                //shuffle the options so the answer is not first everytime
+                options = shuffle(options);
             }
-            options = shuffle(options);
 
             return {
-                question: 'Choose the number ' + number,
-                answer: number,
+                question: pool[questionIndex].question,
+                answer: pool[questionIndex].answer,
+                questionprompt: pool[questionIndex].questionprompt,
                 options: options,
-                answerPrompt: 'No, this is the number '+ number
-            }
+                answerPrompt: pool[questionIndex].prompt
+            };
         }
-        */
     });
 }])
 
@@ -202,56 +158,82 @@ angular.module('quizApp', ['ngRoute'])
  */
 .controller('QuizCtrl', ['$scope', '$routeParams', 'cheer', 'questions',
     function ($scope, $routeParams, cheer, questions) {
-    var vm = this;
-    this.disableButtons = false;
-    this.flashAnswer = false;
-    this.clicked = function (option) {
-        this.score.attempted++;
-        this.disableButtons = true;
-        var thingToSay = '';
-        if (option == this.question.answer) {
-            this.score.correct++;
-            //when a correct answer is clicked
-            //create a cheer and say it
-            var cheerMsg = cheer.get();
-            this.message = cheerMsg.message;
-            this.symbol = cheerMsg.symbol;
-            this.icon = cheerMsg.icon;
-            thingToSay = this.message;
-        } else {
-            // Flash the correct answer
-            thingToSay = this.question.answerPrompt;
-            this.flashAnswer = true;
-        }
-        var msg = new SpeechSynthesisUtterance(thingToSay);
-        msg.onend=function(e) {
-            console.log('onend');
-            //After cheering, clear it, show the next question, and enable the buttons
-            $scope.$apply(function() {
-                vm.message = '';
-                vm.symbol = '';
-                vm.disableButtons = false;
-                vm.flashAnswer = false;
-                vm.askNextQuestion();
-            });
+        var vm = this;
+        this.speechAnswer = new SpeechSynthesisUtterance();
+        this.speechQuestion = new SpeechSynthesisUtterance();
+        this.disableButtons = false;
+        this.flashAnswer = false;
+
+        //handles answer click event
+        this.clicked = function (option) {
+            this.score.attempted++;
+            //disable the buttons so user has to wait for cheering, or reading correct answer
+            this.disableButtons = true;
+            var thingToSay = '';
+            if (option == this.question.answer) {
+                this.score.correct++;
+                //when a correct answer is clicked
+                //create a cheer and say it
+                var cheerMsg = cheer.get();
+                this.message = cheerMsg.message;
+                this.symbol = cheerMsg.symbol;
+                this.icon = cheerMsg.icon;
+                thingToSay = this.message;
+            } else {
+                // Flash the correct answer
+                thingToSay = this.question.answerPrompt;
+                this.flashAnswer = true;
+            }
+            //say the cheer/ correct answer, but set the end handler before saying it
+            vm.speechAnswer.text = thingToSay;
+            vm.speechAnswer.onend = function (e) {
+                console.log('onend');
+                //After cheering, clear it, show the next question, and enable the buttons
+                $scope.$apply(function () {
+                    vm.message = '';
+                    vm.symbol = '';
+                    vm.disableButtons = false;
+                    vm.flashAnswer = false;
+                    vm.askNextQuestion();
+                });
+            };
+            console.log('speaking');
+            window.speechSynthesis.speak(vm.speechAnswer);
         };
-        console.log('speaking');
-        window.speechSynthesis.speak(msg);
-    };
 
-    this.askNextQuestion = function() {
-        vm.question = questions.get(this.questionList);
-        var msg1 = new SpeechSynthesisUtterance(vm.question.question);
-        window.speechSynthesis.speak(msg1);
-    };
+        this.askNextQuestion = function () {
+            vm.question = questions.get(this.questionList);
+            vm.speechQuestion.text = vm.question.question;
+            window.speechSynthesis.speak(vm.speechQuestion);
+        };
 
-    this.score = {correct:0, attempted:0};
-    questions.getList('data/'+$routeParams.id).then(function(list) {
-        vm.questionList = list.data;
-        vm.askNextQuestion();
+        this.score = {
+            correct: 0,
+            attempted: 0
+        };
+        questions.getList('data/' + $routeParams.id).then(function (
+            list) {
+            vm.questionList = list.data;
+            vm.askNextQuestion();
+        });
+
+
+    }
+])
+
+/**
+ * @ngdoc controller
+ * @name MainCtrl
+ *
+ * @description
+ * Controller for the landing page
+ */
+.controller('MainCtrl', ['questions', function (questions) {
+    var vm = this;
+    questions.getList('data/list.json').then(function (response) {
+        vm.menuItems = response.data;
+        console.log(vm.menuItems);
     });
-
-
 }])
 
 /**
@@ -261,34 +243,34 @@ angular.module('quizApp', ['ngRoute'])
  * @description
  * Controller for the sticker page
  */
-.controller('StickerCtrl', ['$scope', function($scope) {
-/*    //These are cool unicodes, but safari displays them really small,
-    //so I am not going to use them for now
-    this.stickers = ['🐄','🐇','🐈','🐞','🐟','🐠','🐡','🐢','🐣',
-    '🐤','🐥','🐦','🐧'];
-    //more sticker options
-    //,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
-    //'🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
-    //'🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];
-    this.currstickers = [];
-    this.pick = function(sticker) {
-        this.currstickers.push({id: this.currstickers.length, sticker: sticker});
-    };
-    */
+.controller('StickerCtrl', ['$scope', function ($scope) {
+    /*    //These are cool unicodes, but safari displays them really small,
+        //so I am not going to use them for now
+        this.stickers = ['🐄','🐇','🐈','🐞','🐟','🐠','🐡','🐢','🐣',
+        '🐤','🐥','🐦','🐧'];
+        //more sticker options
+        //,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
+        //'🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
+        //'🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];
+        this.currstickers = [];
+        this.pick = function(sticker) {
+            this.currstickers.push({id: this.currstickers.length, sticker: sticker});
+        };
+        */
 
     //Font awesome sticker choices:
-         /*
-            fa-futbol-o
-            fa-bicycle
-            fa-truck
-            fa-trophy
-            heart
-            heart-o
-            smile-o
-            fa-star
-            rocket
-            paw
-            */
+    /*
+       fa-futbol-o
+       fa-bicycle
+       fa-truck
+       fa-trophy
+       heart
+       heart-o
+       smile-o
+       fa-star
+       rocket
+       paw
+       */
 
 }])
 /**
@@ -298,20 +280,21 @@ angular.module('quizApp', ['ngRoute'])
  * @description
  * Controller for service worker and its updates
  */
-.controller('ServiceController',['$scope', function($scope) {
+.controller('ServiceController', ['$scope', function ($scope) {
 
     /**
      * Starts the service worker
      */
-    $scope.init = function() {
+    $scope.init = function () {
         $scope.newversion = false;
         if (!navigator.serviceWorker) return;
 
-        var swpath=window.location.pathname+'sw.js';
+        var swpath = window.location.pathname + 'sw.js';
 
         console.log('pathname: ' + swpath);
 
-        navigator.serviceWorker.register(swpath).then(function(reg) {
+        navigator.serviceWorker.register(swpath).then(function (
+            reg) {
             if (!navigator.serviceWorker.controller) {
                 return;
             }
@@ -326,25 +309,28 @@ angular.module('quizApp', ['ngRoute'])
                 return;
             }
 
-            reg.addEventListener('updatefound', function() {
-                $scope.trackInstalling(reg.installing);
-            });
+            reg.addEventListener('updatefound',
+                function () {
+                    $scope.trackInstalling(reg.installing);
+                });
         });
         // Ensure refresh is only called once.
         // This works around a bug in "force update on reload".
         var refreshing;
-        navigator.serviceWorker.addEventListener('controllerchange', function() {
-            if (refreshing) return;
-            window.location.reload();
-            refreshing = true;
-        });
+        navigator.serviceWorker.addEventListener(
+            'controllerchange',
+            function () {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
+            });
     };
 
     /**
      * When a worker is installed, display prompt
      */
-    $scope.trackInstalling = function(worker) {
-        worker.addEventListener('statechange', function() {
+    $scope.trackInstalling = function (worker) {
+        worker.addEventListener('statechange', function () {
             if (worker.state == 'installed') {
                 $scope.updateReady(worker);
             }
@@ -355,8 +341,8 @@ angular.module('quizApp', ['ngRoute'])
     /**
      * When a worker is installed, display prompt
      */
-    $scope.updateReady = function(worker) {
-        $scope.$apply(function() {
+    $scope.updateReady = function (worker) {
+        $scope.$apply(function () {
             $scope.readyWorker = worker;
             $scope.newUpdateReady = true;
         });
@@ -365,7 +351,7 @@ angular.module('quizApp', ['ngRoute'])
     /**
      * When user wants to upgrade, tell the worker to skip waiting
      */
-    $scope.update = function() {
+    $scope.update = function () {
         $scope.readyWorker.postMessage({
             action: 'skipWaiting'
         });
