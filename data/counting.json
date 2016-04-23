@@ -20,11 +20,11 @@
 	{
 		"question": "How many stars do you see?",
 		"questionprompt": "★★★★",
-		"answer": "1",
+		"answer": "4",
 		"prompt": "There are four stars."
 	},
 	{
-		"question": "How many stars do you see?",
+		"question": "How many circles do you see?",
 		"questionprompt": "●●●●●",
 		"answer": "5",
 		"prompt": "There are five circles."
