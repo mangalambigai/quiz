@@ -69,8 +69,8 @@ gulp.task('copy-bower', function() {
 });
 
 gulp.task('copy-manifest', function() {
-	gulp.src('*.png')
-		.pipe(gulp.dest('./dist'));
+	gulp.src('icons/*')
+		.pipe(gulp.dest('./dist/icons'));
 	gulp.src('manifest.json')
 		.pipe(gulp.dest('./dist'));
 });
