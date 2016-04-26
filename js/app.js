@@ -159,6 +159,8 @@ angular.module('quizApp', ['ngRoute'])
 .controller('QuizCtrl', ['$scope', '$routeParams', 'cheer', 'questions',
     function ($scope, $routeParams, cheer, questions) {
         var vm = this;
+        //SpeechSynthesisUtterance should not be local variable,
+        //or when it goes out of scope, end event does not fire
         this.speechAnswer = new SpeechSynthesisUtterance();
         this.speechQuestion = new SpeechSynthesisUtterance();
         this.disableButtons = false;
@@ -187,7 +189,6 @@ angular.module('quizApp', ['ngRoute'])
             //say the cheer/ correct answer, but set the end handler before saying it
             vm.speechAnswer.text = thingToSay;
             vm.speechAnswer.onend = function (e) {
-                console.log('onend');
                 //After cheering, clear it, show the next question, and enable the buttons
                 $scope.$apply(function () {
                     vm.message = '';
@@ -197,7 +198,6 @@ angular.module('quizApp', ['ngRoute'])
                     vm.askNextQuestion();
                 });
             };
-            console.log('speaking');
             window.speechSynthesis.speak(vm.speechAnswer);
         };
 
@@ -211,11 +211,13 @@ angular.module('quizApp', ['ngRoute'])
             correct: 0,
             attempted: 0
         };
-        questions.getList('data/' + $routeParams.id).then(function (
-            list) {
-            vm.questionList = list.data;
-            vm.askNextQuestion();
-        });
+
+        this.init = function() {
+            questions.getList('data/' + $routeParams.id).then(function (list) {
+                vm.questionList = list.data;
+                vm.askNextQuestion();
+            });
+        };
 
 
     }
@@ -232,7 +234,6 @@ angular.module('quizApp', ['ngRoute'])
     var vm = this;
     questions.getList('data/list.json').then(function (response) {
         vm.menuItems = response.data;
-        console.log(vm.menuItems);
     });
 }])
 
