@@ -1,6 +1,9 @@
 {
     "name": "Preschool Quiz",
     "start_url": "index.html",
+    "gcm_sender_id": "467492489793",
+    "gcm_user_visible_only": true,
+
     "icons": [{
         "src": "icons\/android-chrome-36x36.png",
         "sizes": "36x36",
