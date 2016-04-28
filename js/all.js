@@ -15,7 +15,7 @@ function shuffle(arr) {
  * @name quizApp
  * @requires
  */
-angular.module('quizApp', ['ngRoute'])
+angular.module('quizApp', ['ngRoute', 'firebase'])
 .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/quiz/:id', {
@@ -33,10 +33,19 @@ angular.module('quizApp', ['ngRoute'])
         controller: 'MainCtrl',
         controllerAs: 'menu'
     })
+    .when('/parents', {
+        templateUrl: 'partials/parents.html',
+        controller: 'ParentCtrl',
+        controllerAs: 'settings'
+    })
+    .when('/pushtest', {
+        templateUrl: 'partials/pushtest.html',
+        controller: 'PushTestCtrl',
+        controllerAs: 'pushtest'
+    })
     .otherwise({
         redirectTo: '/home'
     });
-
 }])
 /**
  * @ngdoc service
@@ -159,6 +168,8 @@ angular.module('quizApp', ['ngRoute'])
 .controller('QuizCtrl', ['$scope', '$routeParams', 'cheer', 'questions',
     function ($scope, $routeParams, cheer, questions) {
         var vm = this;
+        //SpeechSynthesisUtterance should not be local variable,
+        //or when it goes out of scope, end event does not fire
         this.speechAnswer = new SpeechSynthesisUtterance();
         this.speechQuestion = new SpeechSynthesisUtterance();
         this.disableButtons = false;
@@ -187,7 +198,6 @@ angular.module('quizApp', ['ngRoute'])
             //say the cheer/ correct answer, but set the end handler before saying it
             vm.speechAnswer.text = thingToSay;
             vm.speechAnswer.onend = function (e) {
-                console.log('onend');
                 //After cheering, clear it, show the next question, and enable the buttons
                 $scope.$apply(function () {
                     vm.message = '';
@@ -197,7 +207,6 @@ angular.module('quizApp', ['ngRoute'])
                     vm.askNextQuestion();
                 });
             };
-            console.log('speaking');
             window.speechSynthesis.speak(vm.speechAnswer);
         };
 
@@ -211,11 +220,14 @@ angular.module('quizApp', ['ngRoute'])
             correct: 0,
             attempted: 0
         };
-        questions.getList('data/' + $routeParams.id).then(function (
-            list) {
-            vm.questionList = list.data;
-            vm.askNextQuestion();
-        });
+
+        this.init = function () {
+            questions.getList('data/' + $routeParams.id).then(
+                function (list) {
+                    vm.questionList = list.data;
+                    vm.askNextQuestion();
+                });
+        };
 
 
     }
@@ -232,7 +244,6 @@ angular.module('quizApp', ['ngRoute'])
     var vm = this;
     questions.getList('data/list.json').then(function (response) {
         vm.menuItems = response.data;
-        console.log(vm.menuItems);
     });
 }])
 
@@ -271,30 +282,23 @@ angular.module('quizApp', ['ngRoute'])
        rocket
        paw
        */
-
 }])
 /**
  * @ngdoc controller
  * @name ServiceController
  *
  * @description
- * Controller for service worker and its updates
+ * Controller for service worker updates
  */
-.controller('ServiceController', ['$scope', function ($scope) {
-
+.controller('ServiceController', ['$scope', 'swfactory',
+    function ($scope, swfactory) {
     /**
      * Starts the service worker
      */
     $scope.init = function () {
         $scope.newversion = false;
-        if (!navigator.serviceWorker) return;
-
-        var swpath = window.location.pathname + 'sw.js';
-
-        console.log('pathname: ' + swpath);
-
-        navigator.serviceWorker.register(swpath).then(function (
-            reg) {
+        swfactory.startsw()
+        .then(function (reg) {
             if (!navigator.serviceWorker.controller) {
                 return;
             }
@@ -309,10 +313,9 @@ angular.module('quizApp', ['ngRoute'])
                 return;
             }
 
-            reg.addEventListener('updatefound',
-                function () {
-                    $scope.trackInstalling(reg.installing);
-                });
+            reg.addEventListener('updatefound', function () {
+                $scope.trackInstalling(reg.installing);
+            });
         });
         // Ensure refresh is only called once.
         // This works around a bug in "force update on reload".
@@ -357,4 +360,232 @@ angular.module('quizApp', ['ngRoute'])
         });
     };
 
+}])
+/**
+ * @ngdoc factory
+ * @name swfactory
+ *
+ * @description
+ * Handles the service worker instantiation and subscription.
+ */
+.factory('swfactory', ['endpoints', function (endpoints) {
+    var swfactory = {
+        enablePush: false,
+        isSubscribed: false
+    };
+
+    /*
+     * start the serviceworker
+     */
+    swfactory.startsw = function () {
+        if ('serviceWorker' in navigator) {
+            console.log('Service Worker is supported');
+
+            //don't just register sw.js, take the path into account.
+            //this will register sw while running from github pages
+            var swpath = window.location.pathname + 'sw.js';
+            console.log('pathname: ' + swpath);
+
+            return navigator.serviceWorker.register(swpath).then(function () {
+                return navigator.serviceWorker.ready;
+            }).then(function (serviceWorkerRegistration) {
+                swfactory.reg = serviceWorkerRegistration;
+                swfactory.enablePush = true;
+                console.log('Service Worker is ready :^)', swfactory.reg);
+                return swfactory.reg;
+            }).catch(function (error) {
+                console.log('Service Worker Error :^(', error);
+            });
+            //TODO: use initialiseState to set current subscription status
+        }
+    };
+
+    // Once the service worker is registered set the initial state
+    swfactory.initialiseState = function () {
+        // Are Notifications supported in the service worker?
+        if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
+            console.warn('Notifications aren\'t supported.');
+            return;
+        }
+
+        // Check the current Notification permission.
+        // If its denied, it's a permanent block until the
+        // user changes the permission
+        if (Notification.permission === 'denied') {
+            console.warn('The user has blocked notifications.');
+            return;
+        }
+
+        // Check if push messaging is supported
+        if (!('PushManager' in window)) {
+            console.warn('Push messaging isn\'t supported.');
+            return;
+        }
+
+        // We need the service worker registration to check for a subscription
+        navigator.serviceWorker.ready.then(function (
+            serviceWorkerRegistration) {
+            // Do we already have a push message subscription?
+            serviceWorkerRegistration.pushManager.getSubscription()
+                .then(function (subscription) {
+                    // Enable any UI which subscribes / unsubscribes from
+                    // push messages.
+                    this.enableSubscribe = false;
+
+                    if (!subscription) {
+                        // We aren't subscribed to push, so set UI
+                        // to allow the user to enable push
+                        return;
+                    }
+
+                    // Keep your server in sync with the latest subscriptionId
+                    sendSubscriptionToServer(
+                        subscription);
+
+                    // Set your UI to show they have subscribed for
+                    // push messages
+                    this.buttonText =
+                        'Disable Push Messages';
+                    isPushEnabled = true;
+                })
+                .catch(function (err) {
+                    console.warn(
+                        'Error during getSubscription()',
+                        err);
+                });
+        });
+    }
+
+    //returns if push is allowed
+    swfactory.getEnablePush = function () {
+        return this.enablePush;
+    };
+
+    //subscribes to push notification
+    swfactory.subscribe = function () {
+        return this.reg.pushManager.subscribe({
+            userVisibleOnly: true
+        })
+        .then(function (pushSubscription) {
+            swfactory.sub = pushSubscription;
+            console.log('Subscribed! Endpoint:', swfactory.sub.endpoint);
+            swfactory.isSubscribed = true;
+            //save endpoint in a server
+            var endpoint = swfactory.sub.endpoint.substr(swfactory.sub.endpoint.lastIndexOf('/')+1);
+            endpoints.$add(endpoint)
+            .then(function(param) {
+                swfactory.firebaseKey = param.key();
+            });
+        })
+        .catch(function(e) {
+            if (Notification.permission === 'denied') {
+                // The user denied the notification permission which
+                // means we failed to subscribe and the user will need
+                // to manually change the notification permission to
+                // subscribe to push messages
+                window.Demo.debug.log('Permission for Notifications was denied');
+                swfactory.enableSubscribe = false;
+            } else {
+                // A problem occurred with the subscription, this can
+                // often be down to an issue or lack of the gcm_sender_id
+                // and / or gcm_user_visible_only
+                window.Demo.debug.log('Unable to subscribe to push.', e);
+                swfactory.enableSubscribe = true;
+                swfactory.isSubscribed = false;
+            }
+        });
+    };
+
+    //unsubscribes from push
+    swfactory.unsubscribe = function () {
+        return swfactory.sub.unsubscribe().then(function (event) {
+            console.log('Unsubscribed!', event);
+            swfactory.isSubscribed = false;
+            console.log(swfactory.sub);
+            //remove endpoint from server
+            endpoints.$remove(endpoints.$indexFor(swfactory.firebaseKey))
+            .then(function(param) {
+                console.log(param);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+        }).catch(function (error) {
+            console.log('Error unsubscribing', error);
+            swfactory.isSubscribed = false;
+        });
+    };
+
+    //returns current subscription status
+    swfactory.getSubscription = function () {
+        return swfactory.isSubscribed;
+    }
+
+    return swfactory;
+}])
+/**
+ * @ngdoc controller
+ * @name ParentCtrl
+ *
+ * @description
+ * Controller for settings page to be used by parents
+ */
+.controller('ParentCtrl', ['$scope', 'swfactory', function ($scope,
+    swfactory) {
+    vm = this;
+    this.isSubscribed = false;
+    this.save = function () {
+
+    };
+
+    this.init = function () {
+        //TODO: set initial state of push notifications
+        this.enableSubscribe = true; //swservice.getEnablePush();
+        this.buttonText = "Subscribe";
+    };
+
+
+    this.subscribe = function () {
+        // handle current state of subscription
+        this.enableSubscribe = false;
+        swfactory.subscribe()
+        .then(function() {
+            vm.isSubscribed = swfactory.getSubscription();
+        });
+
+        this.enableSubscribe = true;
+    }
+
+    this.unsubscribe = function () {
+        this.enableSubscribe = false;
+        swfactory.unsubscribe()
+        .then(function() {
+            vm.isSubscribed = swfactory.getSubscription();
+        });
+
+        this.enableSubscribe = true;
+    }
+}])
+/**
+ * @ngdoc service
+ * @name endpoints
+ *
+ * @description
+ * handles storing the push endpoints in firebase
+ */
+.service('endpoints', function($firebaseArray) {
+    var ref = new Firebase("https://flickering-torch-1240.firebaseio.com/endpoints/");
+    // create a synchronized array
+    return $firebaseArray(ref);
+})
+/**
+ * @ngdoc controller
+ * @name PushTestCtrl
+ *
+ * @description
+ * Shows curl command to run in terminal- to demonstrate push notifications
+ */
+.controller('PushTestCtrl', ['endpoints', function( endpoints ) {
+    // create a synchronized array
+    this.endpoints = endpoints;
 }]);

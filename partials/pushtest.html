@@ -1,0 +1,13 @@
+<div class="pushtest-inner">
+    <h3>
+        To test push notification run the following curl in a terminal:
+    </h3>
+    <code>
+        curl --header "Authorization: key=AIzaSyB4fEC71KGycDCzJE0hSF9cRpuGFUt1fWw" --header Content-Type:"application/json" https://android.googleapis.com/gcm/send -d "{\"registration_ids\":[<span ng-repeat="endpoint in pushtest.endpoints"><span ng-if="$index>0">,</span>\"{{endpoint.$value}}\"</span>]}"
+    </code>
+
+    <p>
+        You should see the notification even if the page is not open.
+        If the browser is not open, the notification should show up next time when you open the browser.
+    </p>
+</div>

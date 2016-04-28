@@ -116,11 +116,14 @@ body {
 	display: inline;
 }
 
-.menubox-inner {
+.menubox-inner,
+.settingbox-inner,
+.pushtest-inner {
 	background-color: lightblue;
 	border: 2px solid blue;
 	margin: auto;
 }
+
 
 .menu-item {
 	width: 100%;
@@ -150,7 +153,9 @@ body {
 		margin-top: 20px;
 		margin-bottom: 10px;
 	}
-	.menubox-inner {
+	.menubox-inner,
+	.settingbox-inner,
+	.pushtest-inner {
 		width: 50%;
 		margin: auto;
 	}

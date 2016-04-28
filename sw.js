@@ -1,13 +1,13 @@
 var staticCacheName = 'psquiz-static-v1';
 
 /**
- * Update the cache on install
+ * Update the cache on install!!
  */
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(staticCacheName)
         .then(function(cache) {
-            //critical resources!!!!!!!!!!!!!!!
+            //critical resources
             return cache.addAll([
                 'index.html',
                 'js/all.js',
@@ -24,6 +24,9 @@ self.addEventListener('install', function(event) {
             ]);
         })
     );
+    //skip waiting for testing
+    self.skipWaiting();
+
 });
 
 /**
@@ -53,7 +56,8 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.open(staticCacheName).then(function(cache) {
             return cache.match(event.request).then(function (response) {
-                return response || fetch(event.request).then(function(response) {
+                //disable cache response for testing
+                return /*response ||*/ fetch(event.request).then(function(response) {
                     if (event.request.url.indexOf('browser-sync')== -1)
                         cache.put(event.request, response.clone());
                     return response;
@@ -85,4 +89,46 @@ self.addEventListener('message', function(event) {
     if (event.data.action === 'skipWaiting') {
         self.skipWaiting();
     }
+});
+
+/**
+ * Responds to push messages from GCM.
+ */
+self.addEventListener('push', function (event) {
+    console.log('Push message', event);
+    var title = 'Push message';
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body: 'Come and play with letters and numbers!',
+            icon: 'icons/favicon-96x96.png',
+            tag: 'preschool quiz'
+        })
+    );
+});
+
+/**
+ * Launches web app on notification click.
+ */
+self.addEventListener('notificationclick', function (event) {
+    console.log('On notification click: ', event.notification.tag);
+    // Android doesn't close the notification when you click on it.
+    event.notification.close();
+
+    // This looks to see if the current window is already open and
+    // focuses if it is
+    event.waitUntil(
+        clients.matchAll({
+            type: "window"
+        })
+        .then(function (clientList) {
+            for (var i = 0; i < clientList.length; i++) {
+                var client = clientList[i];
+                if (client.url == '/' && 'focus' in client)
+                    return client.focus();
+            }
+            if (clients.openWindow) {
+                return clients.openWindow('/');
+            }
+        })
+    );
 });
