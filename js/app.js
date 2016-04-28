@@ -377,7 +377,7 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
  * @description
  * Handles the service worker instantiation and subscription.
  */
-.factory('swfactory', function () {
+.factory('swfactory', ['endpoints', function (endpoints) {
     var swfactory = {
         enablePush: false,
         isSubscribed: false
@@ -474,7 +474,9 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
             sub = pushSubscription;
             console.log('Subscribed! Endpoint:', sub.endpoint);
             swfactory.isSubscribed = true;
-            //TODO: save endpoint in a server
+            //save endpoint in a server
+            var endpoint = sub.endpoint.substr(sub.endpoint.lastIndexOf('/')+1);
+            endpoints.$add(endpoint);
         });
     };
 
@@ -484,6 +486,7 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
             console.log('Unsubscribed!', event);
             swfactory.isSubscribed = false;
             //TODO: remove endpoint from server
+            //endpoints.$remove();
         }).catch(function (error) {
             console.log('Error unsubscribing', error);
             //subscribeButton.textContent = 'Subscribe';
@@ -496,7 +499,7 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     }
 
     return swfactory;
-})
+}])
 /**
  * @ngdoc controller
  * @name ParentCtrl
@@ -610,7 +613,11 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
         */
     }
 }])
-
+.service('endpoints', function($firebaseArray) {
+  var ref = new Firebase("https://flickering-torch-1240.firebaseio.com/endpoints/");
+  // create a synchronized array
+  return $firebaseArray(ref);
+})
 /**
  * @ngdoc controller
  * @name PushTestCtrl
@@ -618,8 +625,7 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
  * @description
  * Shows curl command to run in terminal- to demonstrate push notifications
  */
-.controller('PushTestCtrl', function( $firebaseArray) {
-  var ref = new Firebase("https://flickering-torch-1240.firebaseio.com/endpoints");
+.controller('PushTestCtrl', ['endpoints', function( endpoints ) {
   // create a synchronized array
-  this.endpoints = $firebaseArray(ref);
-});
+  this.endpoints = endpoints;
+}]);
