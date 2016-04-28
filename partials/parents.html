@@ -9,7 +9,8 @@
     <div class="form-group">
         <label for="subscribe" class="col-md-6 control-label" >Would you like to subscribe to push notifications?</label>
         <div class="col-sm-6">
-            <button id="subscribe" name="subscribe" ng-disabled="!settings.enableSubscribe" type= "checkbox" ng-click="settings.subscribe()">{{settings.buttonText}}</button>
+            <button id="subscribe" ng-show="!settings.isSubscribed" name="subscribe" ng-disabled="!settings.enableSubscribe" type= "checkbox" ng-click="settings.subscribe()">Subscribe</button>
+            <button id="unsubscribe" ng-show="settings.isSubscribed" name="subscribe" ng-disabled="!settings.enableSubscribe" type= "checkbox" ng-click="settings.unsubscribe()">Unsubscribe</button>
         </div>
     </div>
 

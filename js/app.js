@@ -392,13 +392,11 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
             navigator.serviceWorker.register('sw.js').then(function () {
                 return navigator.serviceWorker.ready;
             }).then(function (serviceWorkerRegistration) {
-                reg = serviceWorkerRegistration;
+                swfactory.reg = serviceWorkerRegistration;
                 swfactory.enablePush = true;
-                console.log('Service Worker is ready :^)',
-                    reg);
+                console.log('Service Worker is ready :^)', swfactory.reg);
             }).catch(function (error) {
-                console.log('Service Worker Error :^(',
-                    error);
+                console.log('Service Worker Error :^(', error);
             });
             //TODO: use initialiseState to set current subscription status
         }
@@ -467,29 +465,47 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
 
     //subscribes to push notification
     swfactory.subscribe = function () {
-        reg.pushManager.subscribe({
+        return this.reg.pushManager.subscribe({
             userVisibleOnly: true
-        }).
-        then(function (pushSubscription) {
-            sub = pushSubscription;
-            console.log('Subscribed! Endpoint:', sub.endpoint);
+        })
+        .then(function (pushSubscription) {
+            swfactory.sub = pushSubscription;
+            console.log('Subscribed! Endpoint:', swfactory.sub.endpoint);
             swfactory.isSubscribed = true;
             //save endpoint in a server
-            var endpoint = sub.endpoint.substr(sub.endpoint.lastIndexOf('/')+1);
+            var endpoint = swfactory.sub.endpoint.substr(swfactory.sub.endpoint.lastIndexOf('/')+1);
             endpoints.$add(endpoint);
+        })
+        .catch(function(e) {
+            if (Notification.permission === 'denied') {
+                // The user denied the notification permission which
+                // means we failed to subscribe and the user will need
+                // to manually change the notification permission to
+                // subscribe to push messages
+                window.Demo.debug.log('Permission for Notifications was denied');
+                swfactory.enableSubscribe = false;
+            } else {
+                // A problem occurred with the subscription, this can
+                // often be down to an issue or lack of the gcm_sender_id
+                // and / or gcm_user_visible_only
+                window.Demo.debug.log('Unable to subscribe to push.', e);
+                swfactory.enableSubscribe = true;
+                swfactory.isSubscribed = false;
+            }
         });
     };
 
     //unsubscribes from push
     swfactory.unsubscribe = function () {
-        sub.unsubscribe().then(function (event) {
+        return swfactory.sub.unsubscribe().then(function (event) {
             console.log('Unsubscribed!', event);
             swfactory.isSubscribed = false;
+            console.log(swfactory.sub);
             //TODO: remove endpoint from server
             //endpoints.$remove();
         }).catch(function (error) {
             console.log('Error unsubscribing', error);
-            //subscribeButton.textContent = 'Subscribe';
+            swfactory.isSubscribed = false;
         });
     };
 
@@ -509,7 +525,7 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
  */
 .controller('ParentCtrl', ['$scope', 'swfactory', function ($scope,
     swfactory) {
-
+    vm = this;
     this.isSubscribed = false;
     this.save = function () {
 
@@ -523,100 +539,37 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
 
 
     this.subscribe = function () {
-        //TODO: handle current state of subscription
+        // handle current state of subscription
         this.enableSubscribe = false;
-        swfactory.subscribe();
-        this.enableSubscribe = true;
-        /*
-        // Disable the button so it can't be changed while
-        //   we process the permission request
-        this.enableSubscribe = true;
+        swfactory.subscribe()
+        .then(function() {
+            vm.isSubscribed = swfactory.getSubscription();
+        });
 
-        navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
-        serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true})
-            .then(function(subscription) {
-                // The subscription was successful
-                isPushEnabled = true;
-                this.buttonText = 'Disable Push Messages';
-                this.enableSubscribe = false;
-
-                // TODO: Send the subscription subscription.endpoint
-                // to your server and save it to send a push message
-                // at a later date
-                return sendSubscriptionToServer(subscription);
-            })
-            .catch(function(e) {
-                if (Notification.permission === 'denied') {
-                  // The user denied the notification permission which
-                  // means we failed to subscribe and the user will need
-                  // to manually change the notification permission to
-                  // subscribe to push messages
-                  window.Demo.debug.log('Permission for Notifications was denied');
-                  this.enableSubscribe = true;
-                } else {
-                  // A problem occurred with the subscription, this can
-                  // often be down to an issue or lack of the gcm_sender_id
-                  // and / or gcm_user_visible_only
-                  window.Demo.debug.log('Unable to subscribe to push.', e);
-                  this.enableSubscribe = false;
-                  this.buttonText = 'Enable Push Messages';
-                }
-            });
-          });
-        */
+        this.enableSubscribe = true;
     }
 
-    //TODO: this will probably go into the swfactory
     this.unsubscribe = function () {
-        swfactory.unsubscribe();
-        /*  this.enableSubscribe = true;
+        this.enableSubscribe = false;
+        swfactory.unsubscribe()
+        .then(function() {
+            vm.isSubscribed = swfactory.getSubscription();
+        });
 
-          navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
-            // To unsubscribe from push messaging, you need get the
-            // subscription object, which you can call unsubscribe() on.
-            serviceWorkerRegistration.pushManager.getSubscription()
-              .then(function(pushSubscription) {
-                // Check we have a subscription to unsubscribe
-                if (!pushSubscription) {
-                  // No subscription object, so set the state
-                  // to allow the user to subscribe to push
-                  isPushEnabled = false;
-                  this.enableSubscribe = false;
-                  this.buttonText = 'Enable Push Messages';
-                  return;
-                }
-
-                // TODO: Make a request to your server to remove
-                // the users data from your data store so you
-                // don't attempt to send them push messages anymore
-
-                // We have a subscription, so call unsubscribe on it
-                pushSubscription.unsubscribe()
-                  .then(function(successful) {
-                    this.enableSubscribe = false;
-                    this.buttonText = 'Enable Push Messages';
-                    isPushEnabled = false;
-                  }).catch(function(e) {
-                    // We failed to unsubscribe, this can lead to
-                    // an unusual state, so may be best to remove
-                    // the users data from your data store and
-                    // inform the user that you have done so
-
-                    console.log('Unsubscription error: ', e);
-                    this.enableSubscribe = false;
-                    this.buttonText = 'Enable Push Messages';
-                  });
-              }).catch(function(e) {
-                console.error('Error thrown while unsubscribing from push messaging.', e);
-              });
-          });
-        */
+        this.enableSubscribe = true;
     }
 }])
+/**
+ * @ngdoc service
+ * @name endpoints
+ *
+ * @description
+ * handles storing the push endpoints in firebase
+ */
 .service('endpoints', function($firebaseArray) {
-  var ref = new Firebase("https://flickering-torch-1240.firebaseio.com/endpoints/");
-  // create a synchronized array
-  return $firebaseArray(ref);
+    var ref = new Firebase("https://flickering-torch-1240.firebaseio.com/endpoints/");
+    // create a synchronized array
+    return $firebaseArray(ref);
 })
 /**
  * @ngdoc controller
@@ -626,6 +579,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
  * Shows curl command to run in terminal- to demonstrate push notifications
  */
 .controller('PushTestCtrl', ['endpoints', function( endpoints ) {
-  // create a synchronized array
-  this.endpoints = endpoints;
+    // create a synchronized array
+    this.endpoints = endpoints;
 }]);
