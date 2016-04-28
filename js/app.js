@@ -474,7 +474,10 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
             swfactory.isSubscribed = true;
             //save endpoint in a server
             var endpoint = swfactory.sub.endpoint.substr(swfactory.sub.endpoint.lastIndexOf('/')+1);
-            endpoints.$add(endpoint);
+            endpoints.$add(endpoint)
+            .then(function(param) {
+                swfactory.firebaseKey = param.key();
+            });
         })
         .catch(function(e) {
             if (Notification.permission === 'denied') {
@@ -501,8 +504,14 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
             console.log('Unsubscribed!', event);
             swfactory.isSubscribed = false;
             console.log(swfactory.sub);
-            //TODO: remove endpoint from server
-            //endpoints.$remove();
+            //remove endpoint from server
+            endpoints.$remove(endpoints.$indexFor(swfactory.firebaseKey))
+            .then(function(param) {
+                console.log(param);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
         }).catch(function (error) {
             console.log('Error unsubscribing', error);
             swfactory.isSubscribed = false;
