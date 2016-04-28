@@ -15,7 +15,7 @@ function shuffle(arr) {
  * @name quizApp
  * @requires
  */
-angular.module('quizApp', ['ngRoute'])
+angular.module('quizApp', ['ngRoute', 'firebase'])
 .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/quiz/:id', {
@@ -37,6 +37,11 @@ angular.module('quizApp', ['ngRoute'])
         templateUrl: 'partials/parents.html',
         controller: 'ParentCtrl',
         controllerAs: 'settings'
+    })
+    .when('/pushtest', {
+        templateUrl: 'partials/pushtest.html',
+        controller: 'PushTestCtrl',
+        controllerAs: 'pushtest'
     })
     .otherwise({
         redirectTo: '/home'
@@ -604,4 +609,17 @@ angular.module('quizApp', ['ngRoute'])
           });
         */
     }
-}]);
+}])
+
+/**
+ * @ngdoc controller
+ * @name PushTestCtrl
+ *
+ * @description
+ * Shows curl command to run in terminal- to demonstrate push notifications
+ */
+.controller('PushTestCtrl', function( $firebaseArray) {
+  var ref = new Firebase("https://flickering-torch-1240.firebaseio.com/endpoints");
+  // create a synchronized array
+  this.endpoints = $firebaseArray(ref);
+});
