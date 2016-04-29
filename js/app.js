@@ -168,6 +168,7 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
 .controller('QuizCtrl', ['$scope', '$routeParams', 'cheer', 'questions',
     function ($scope, $routeParams, cheer, questions) {
         var vm = this;
+
         //SpeechSynthesisUtterance should not be local variable,
         //or when it goes out of scope, end event does not fire
         this.speechAnswer = new SpeechSynthesisUtterance();
@@ -297,15 +298,8 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
      */
     $scope.init = function () {
         $scope.newversion = false;
-        swfactory.startsw();
-        /*
-        if (!navigator.serviceWorker) return;
-
-        var swpath = window.location.pathname + 'sw.js';
-
-        console.log('pathname: ' + swpath);
-
-        navigator.serviceWorker.register(swpath).then( function (reg) {
+        swfactory.startsw()
+        .then(function (reg) {
             if (!navigator.serviceWorker.controller) {
                 return;
             }
@@ -320,10 +314,9 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
                 return;
             }
 
-            reg.addEventListener('updatefound',
-                function () {
-                    $scope.trackInstalling(reg.installing);
-                });
+            reg.addEventListener('updatefound', function () {
+                $scope.trackInstalling(reg.installing);
+            });
         });
         // Ensure refresh is only called once.
         // This works around a bug in "force update on reload".
@@ -335,7 +328,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
                 window.location.reload();
                 refreshing = true;
             });
-          */
     };
 
     /**
@@ -389,12 +381,19 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     swfactory.startsw = function () {
         if ('serviceWorker' in navigator) {
             console.log('Service Worker is supported');
-            navigator.serviceWorker.register('sw.js').then(function () {
+
+            //don't just register sw.js, take the path into account.
+            //this will register sw while running from github pages
+            var swpath = window.location.pathname + 'sw.js';
+            console.log('pathname: ' + swpath);
+
+            return navigator.serviceWorker.register(swpath).then(function () {
                 return navigator.serviceWorker.ready;
             }).then(function (serviceWorkerRegistration) {
                 swfactory.reg = serviceWorkerRegistration;
                 swfactory.enablePush = true;
                 console.log('Service Worker is ready :^)', swfactory.reg);
+                return swfactory.reg;
             }).catch(function (error) {
                 console.log('Service Worker Error :^(', error);
             });
