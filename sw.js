@@ -96,7 +96,7 @@ self.addEventListener('message', function(event) {
  */
 self.addEventListener('push', function (event) {
     console.log('Push message', event);
-    var title = 'Push message';
+    var title = 'Hello from preschool fun!';
     event.waitUntil(
         self.registration.showNotification(title, {
             body: 'Come and play with letters and numbers!',
@@ -114,6 +114,8 @@ self.addEventListener('notificationclick', function (event) {
     // Android doesn't close the notification when you click on it.
     event.notification.close();
 
+    var url = 'https://mangalambigai.github.io/quiz';
+
     // This looks to see if the current window is already open and
     // focuses if it is
     event.waitUntil(
@@ -123,11 +125,11 @@ self.addEventListener('notificationclick', function (event) {
         .then(function (clientList) {
             for (var i = 0; i < clientList.length; i++) {
                 var client = clientList[i];
-                if (client.url == '/' && 'focus' in client)
+                if (client.url === url && 'focus' in client)
                     return client.focus();
             }
             if (clients.openWindow) {
-                return clients.openWindow('/');
+                return clients.openWindow(url);
             }
         })
     );

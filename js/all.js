@@ -168,12 +168,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
 .controller('QuizCtrl', ['$scope', '$routeParams', 'cheer', 'questions',
     function ($scope, $routeParams, cheer, questions) {
         var vm = this;
-        //SpeechSynthesisUtterance should not be local variable,
-        //or when it goes out of scope, end event does not fire
-        this.speechAnswer = new SpeechSynthesisUtterance();
-        this.speechQuestion = new SpeechSynthesisUtterance();
-        this.disableButtons = false;
-        this.flashAnswer = false;
 
         //handles answer click event
         this.clicked = function (option) {
@@ -222,6 +216,14 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
         };
 
         this.init = function () {
+            var vm = this;
+            //SpeechSynthesisUtterance should not be local variable,
+            //or when it goes out of scope, end event does not fire
+            this.speechAnswer = new SpeechSynthesisUtterance();
+            this.speechQuestion = new SpeechSynthesisUtterance();
+            this.disableButtons = false;
+            this.flashAnswer = false;
+
             questions.getList('data/' + $routeParams.id).then(
                 function (list) {
                     vm.questionList = list.data;
