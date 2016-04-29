@@ -1,22 +1,14 @@
 <div class="settingbox-inner" ng-init="settings.init() ">
 <form class="form form-horizontal">
     <div class="form-group">
-        <label for="name" class="col-md-6 control-label">Please enter your child's name:</label>
-        <div class="col-md-6">
-        <input id="name" name="name" type="text" class="form-control" placeholder="Enter your child's name here.">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="subscribe" class="col-md-6 control-label" >Would you like to subscribe to push notifications?</label>
+        <label for="subscribe" ng-show="!settings.isSubscribed" class="col-md-6 control-label" >Would you like to subscribe to occasional push notifications?</label>
+        <label for="unsubscribe" ng-show="settings.isSubscribed" class="col-md-6 control-label" >Would you like to unsubscribe from occasional push notifications?</label>
         <div class="col-sm-6">
             <button id="subscribe" ng-show="!settings.isSubscribed" name="subscribe" ng-disabled="!settings.enableSubscribe" type= "checkbox" ng-click="settings.subscribe()">Subscribe</button>
             <button id="unsubscribe" ng-show="settings.isSubscribed" name="subscribe" ng-disabled="!settings.enableSubscribe" type= "checkbox" ng-click="settings.unsubscribe()">Unsubscribe</button>
-        </div>
-    </div>
 
-    <div class="form-group">
-        <div class="col-sm-offset-6 col-sm-6">
-            <button ng-click="settings.save()">Save</button>
+            <a href="#/home"><button id="back">Back to quiz</button></a>
+
         </div>
     </div>
 </form>
