@@ -1,182 +1,189 @@
-html, body, main {
-	width: 100%;
-	height: 100%;
+html,
+body,
+main {
+    width: 100%;
+    height: 100%;
 }
 
 .full-height {
-	height:100%;
+    height: 100%;
 }
 
 body {
-	background-color: steelblue;
+    background-color: steelblue;
 }
 
 .parent-link {
-    transform: rotate(-40deg) translate(-27px,0px);
+    transform: rotate(-40deg) translate(-27px, 0px);
     position: absolute;
 }
 
-.parent-link button{
+.parent-link button {
     padding: 0px 30px;
 }
 
 .vertical-center {
-	width:100%;
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .flex-container {
-	height: 100%;
-	display: flex;
-	flex-wrap: wrap;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .questionbox-inner {
-	background-color: lightblue;
-	border: 2px solid blue;
+    background-color: lightblue;
+    border: 2px solid blue;
 }
 
 .cheerbox {
-	width: 100%;
+    width: 100%;
 }
 
-.question, .answer,.score {
-	width: 100%;
+.question,
+.answer,
+.score {
+    width: 100%;
 }
 
 .question-lg {
-	display: none;
+    display: none;
 }
 
 .cheerbox-inner {
-	background-color: lightpink;
-	border: 2px solid purple;
-	width: 400px;
-	max-width: 90%;
-	margin: auto;
+    background-color: lightpink;
+    border: 2px solid purple;
+    width: 400px;
+    max-width: 90%;
+    margin: auto;
 }
 
 .questionbox-inner .answer-btn {
-	width: 90%;
-	margin: 10px auto;
+    width: 90%;
+    margin: 10px auto;
 }
 
 .flash-answer {
-	background-color: orange;
+    background-color: orange;
 }
 
 .cheer-picture {
-	text-align: center;
+    text-align: center;
 }
 
 .cheer-picture i {
-	color: purple;
+    color: purple;
 }
 
-.cheer-picture h1{
-	font-size: 10em;
-	color: purple;
+.cheer-picture h1 {
+    font-size: 10em;
+    color: purple;
 }
 
 .answer button h1 {
-	font-size: 3em;
-	margin: 0;
+    font-size: 3em;
+    margin: 0;
 }
 
 .question .questionprompt {
-	font-size: 5em;
-	color: darkblue;
+    font-size: 5em;
+    color: darkblue;
 }
 
-
 .flex-container-sticker {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
 }
 
 .sticker-sheet {
-	background-color: white;
-	width:100%;
-	flex-grow: 1;
-	border: 1px solid red;
+    background-color: white;
+    width: 100%;
+    flex-grow: 1;
+    border: 1px solid red;
 }
 
 .sticker-roll {
-	width: 100%;
-	height: 100px;
-	background-color: white;
-	color: blue;
-	border: 1px solid green;
-	flex-wrap: nowrap;
-	padding: 0px;
+    width: 100%;
+    height: 100px;
+    background-color: white;
+    color: blue;
+    border: 1px solid green;
+    flex-wrap: nowrap;
+    padding: 0px;
 }
 
 .sticker-roll h1 {
-	font-size: 5em;
+    font-size: 5em;
 }
 
 .stickers {
-	font-size: 5em;
-	color: blue;
-	flex-direction: row;
-	display: inline;
+    font-size: 5em;
+    color: blue;
+    flex-direction: row;
+    display: inline;
 }
 
 .menubox-inner,
 .settingbox-inner,
 .pushtest-inner {
-	background-color: lightblue;
-	border: 2px solid blue;
-	margin: auto;
+    background-color: lightblue;
+    border: 2px solid blue;
+    margin: auto;
 }
 
-
 .menu-item {
-	width: 100%;
-	text-align: center;
+    width: 100%;
+    text-align: center;
 }
 
 .menubox-inner a,
-.menubox-inner button{
-	width: 100%;
-	padding: 0;
+.menubox-inner button {
+    width: 100%;
+    padding: 0;
 }
 
 .menubox-inner h1 {
-	padding: 0;
+    padding: 0;
 }
+
 .push-test-code {
-	word-wrap: break-word;
+    word-wrap: break-word;
 }
+
 @media screen and (min-width: 768px) {
-	.answer {
-		width: 33%;
-	}
-	.questionbox-inner {
-		width: 90%;
-		margin: auto;
-	}
-	.answer button h1 {
-		font-size: 5em;
-		margin-top: 20px;
-		margin-bottom: 10px;
-	}
-	.menubox-inner,
-	.settingbox-inner,
-	.pushtest-inner {
-		width: 50%;
-		margin: auto;
-	}
+    .answer {
+        width: 33%;
+    }
 
-	.question-lg {
-		display: block;
-	}
+    .questionbox-inner {
+        width: 90%;
+        margin: auto;
+    }
 
-	.menubox-inner button {
-		width: 50%;
-	}
+    .answer button h1 {
+        font-size: 5em;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .menubox-inner,
+    .settingbox-inner,
+    .pushtest-inner {
+        width: 50%;
+        margin: auto;
+    }
+
+    .question-lg {
+        display: block;
+    }
+
+    .menubox-inner button {
+        width: 50%;
+    }
 }
