@@ -23,11 +23,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
         controller: 'QuizCtrl',
         controllerAs: 'quiz'
     })
-    .when('/stickers', {
-        templateUrl: 'partials/stickers.html',
-        controller: 'StickerCtrl',
-        controllerAs: 'sticker'
-    })
     .when('/home', {
         templateUrl: 'partials/main.html',
         controller: 'MainCtrl',
@@ -248,42 +243,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     });
 }])
 
-/**
- * @ngdoc controller
- * @name StickerCtrl
- *
- * @description
- * Controller for the sticker page
- */
-.controller('StickerCtrl', ['$scope', function ($scope) {
-    /*    //These are cool unicodes, but safari displays them really small,
-        //so I am not going to use them for now
-        this.stickers = ['🐄','🐇','🐈','🐞','🐟','🐠','🐡','🐢','🐣',
-        '🐤','🐥','🐦','🐧'];
-        //more sticker options
-        //,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
-        //'🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
-        //'🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];
-        this.currstickers = [];
-        this.pick = function(sticker) {
-            this.currstickers.push({id: this.currstickers.length, sticker: sticker});
-        };
-        */
-
-    //Font awesome sticker choices:
-    /*
-       fa-futbol-o
-       fa-bicycle
-       fa-truck
-       fa-trophy
-       heart
-       heart-o
-       smile-o
-       fa-star
-       rocket
-       paw
-       */
-}])
 /**
  * @ngdoc controller
  * @name ServiceController
