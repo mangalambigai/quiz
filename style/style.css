@@ -14,7 +14,7 @@ body {
 }
 
 .parent-link {
-    transform: rotate(-40deg) translate(-27px, 0px);
+    transform: rotate(-90deg) translate(-100px, -45px);
     position: absolute;
 }
 
