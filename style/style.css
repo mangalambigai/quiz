@@ -10,6 +10,16 @@ html, body, main {
 body {
 	background-color: steelblue;
 }
+
+.parent-link {
+    transform: rotate(-40deg) translate(-27px,0px);
+    position: absolute;
+}
+
+.parent-link button{
+    padding: 0px 30px;
+}
+
 .vertical-center {
 	width:100%;
 	position: absolute;
