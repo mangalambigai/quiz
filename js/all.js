@@ -23,11 +23,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
         controller: 'QuizCtrl',
         controllerAs: 'quiz'
     })
-    .when('/stickers', {
-        templateUrl: 'partials/stickers.html',
-        controller: 'StickerCtrl',
-        controllerAs: 'sticker'
-    })
     .when('/home', {
         templateUrl: 'partials/main.html',
         controller: 'MainCtrl',
@@ -169,6 +164,13 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     function ($scope, $routeParams, cheer, questions) {
         var vm = this;
 
+        //SpeechSynthesisUtterance should not be local variable,
+        //or when it goes out of scope, end event does not fire
+        this.speechAnswer = new SpeechSynthesisUtterance();
+        this.speechQuestion = new SpeechSynthesisUtterance();
+        this.disableButtons = false;
+        this.flashAnswer = false;
+
         //handles answer click event
         this.clicked = function (option) {
             this.score.attempted++;
@@ -216,14 +218,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
         };
 
         this.init = function () {
-            var vm = this;
-            //SpeechSynthesisUtterance should not be local variable,
-            //or when it goes out of scope, end event does not fire
-            this.speechAnswer = new SpeechSynthesisUtterance();
-            this.speechQuestion = new SpeechSynthesisUtterance();
-            this.disableButtons = false;
-            this.flashAnswer = false;
-
             questions.getList('data/' + $routeParams.id).then(
                 function (list) {
                     vm.questionList = list.data;
@@ -249,42 +243,6 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     });
 }])
 
-/**
- * @ngdoc controller
- * @name StickerCtrl
- *
- * @description
- * Controller for the sticker page
- */
-.controller('StickerCtrl', ['$scope', function ($scope) {
-    /*    //These are cool unicodes, but safari displays them really small,
-        //so I am not going to use them for now
-        this.stickers = ['🐄','🐇','🐈','🐞','🐟','🐠','🐡','🐢','🐣',
-        '🐤','🐥','🐦','🐧'];
-        //more sticker options
-        //,'🐅','🐆','🐉','🐊','🐋','🐌','🐍','🐎','🐏','🐐','🐑',
-        //'🐒','🐓','🐔','🐕','🐖','🐗','🐘','🐙','🐚','🐛','🐜','🐝','🐨','🐩','🐪','🐫','🐬','🐭','🐮','🐯','🐰','🐱','🐲','🐳','🐴',
-        //'🐵','🐶','🐷','🐸','🐹', '🐺', '🐻', '🐼'];
-        this.currstickers = [];
-        this.pick = function(sticker) {
-            this.currstickers.push({id: this.currstickers.length, sticker: sticker});
-        };
-        */
-
-    //Font awesome sticker choices:
-    /*
-       fa-futbol-o
-       fa-bicycle
-       fa-truck
-       fa-trophy
-       heart
-       heart-o
-       smile-o
-       fa-star
-       rocket
-       paw
-       */
-}])
 /**
  * @ngdoc controller
  * @name ServiceController
@@ -394,11 +352,13 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
                 swfactory.reg = serviceWorkerRegistration;
                 swfactory.enablePush = true;
                 console.log('Service Worker is ready :^)', swfactory.reg);
+
+                return swfactory.initialiseState();
+            }).then(function(){
                 return swfactory.reg;
             }).catch(function (error) {
                 console.log('Service Worker Error :^(', error);
             });
-            //TODO: use initialiseState to set current subscription status
         }
     };
 
@@ -425,30 +385,31 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
         }
 
         // We need the service worker registration to check for a subscription
-        navigator.serviceWorker.ready.then(function (
+        return navigator.serviceWorker.ready.then(function (
             serviceWorkerRegistration) {
             // Do we already have a push message subscription?
             serviceWorkerRegistration.pushManager.getSubscription()
                 .then(function (subscription) {
                     // Enable any UI which subscribes / unsubscribes from
                     // push messages.
-                    this.enableSubscribe = false;
+                    swfactory.enablePush = true;
 
                     if (!subscription) {
                         // We aren't subscribed to push, so set UI
                         // to allow the user to enable push
+                        swfactory.isSubscribed = false;
                         return;
                     }
 
-                    // Keep your server in sync with the latest subscriptionId
-                    sendSubscriptionToServer(
-                        subscription);
+                    swfactory.sub = subscription;
+                    swfactory.isSubscribed = true;
+                    //save endpoint for unsubscribing
+                    swfactory.endpoint = swfactory.sub.endpoint.substr(swfactory.sub.endpoint.lastIndexOf('/')+1);
+                    console.log('already Subscribed! Endpoint:', swfactory.endpoint);
 
                     // Set your UI to show they have subscribed for
                     // push messages
-                    this.buttonText =
-                        'Disable Push Messages';
-                    isPushEnabled = true;
+                    swfactory.isSubscribed = true;
                 })
                 .catch(function (err) {
                     console.warn(
@@ -473,8 +434,8 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
             console.log('Subscribed! Endpoint:', swfactory.sub.endpoint);
             swfactory.isSubscribed = true;
             //save endpoint in a server
-            var endpoint = swfactory.sub.endpoint.substr(swfactory.sub.endpoint.lastIndexOf('/')+1);
-            endpoints.$add(endpoint)
+            swfactory.endpoint = swfactory.sub.endpoint.substr(swfactory.sub.endpoint.lastIndexOf('/')+1);
+            endpoints.$add(swfactory.endpoint)
             .then(function(param) {
                 swfactory.firebaseKey = param.key();
             });
@@ -485,13 +446,13 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
                 // means we failed to subscribe and the user will need
                 // to manually change the notification permission to
                 // subscribe to push messages
-                window.Demo.debug.log('Permission for Notifications was denied');
+                console.log('Permission for Notifications was denied');
                 swfactory.enableSubscribe = false;
             } else {
                 // A problem occurred with the subscription, this can
                 // often be down to an issue or lack of the gcm_sender_id
                 // and / or gcm_user_visible_only
-                window.Demo.debug.log('Unable to subscribe to push.', e);
+                console.log('Unable to subscribe to push.', e);
                 swfactory.enableSubscribe = true;
                 swfactory.isSubscribed = false;
             }
@@ -501,13 +462,21 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     //unsubscribes from push
     swfactory.unsubscribe = function () {
         return swfactory.sub.unsubscribe().then(function (event) {
-            console.log('Unsubscribed!', event);
+            console.log('Unsubscribed from service worker!', event);
             swfactory.isSubscribed = false;
-            console.log(swfactory.sub);
             //remove endpoint from server
-            endpoints.$remove(endpoints.$indexFor(swfactory.firebaseKey))
+            if (!swfactory.firebaseKey)
+            {
+                endpoints.forEach (function(val) {
+                    if (val.$value== swfactory.endpoint)
+                        swfactory.firebaseKey = val.$id;
+                });
+            }
+
+            if (swfactory.firebaseKey)
+                endpoints.$remove(endpoints.$indexFor(swfactory.firebaseKey))
             .then(function(param) {
-                console.log(param);
+                console.log('Removed subscription endpoint from firebase');
             })
             .catch(function(error) {
                 console.log(error);
@@ -541,9 +510,9 @@ angular.module('quizApp', ['ngRoute', 'firebase'])
     };
 
     this.init = function () {
-        //TODO: set initial state of push notifications
-        this.enableSubscribe = true; //swservice.getEnablePush();
-        this.buttonText = "Subscribe";
+        //set initial state of push notifications
+        this.enableSubscribe = swfactory.getEnablePush();
+        this.isSubscribed = swfactory.getSubscription();
     };
 
 
